@@ -6,12 +6,12 @@
   "license" : "Apache-2.0",
   "scripts": {
     "test": "./node_modules/.bin/cucumber-js -r ./test",
-    "test-junit": "./node_modules/.bin/cucumber-js -r ./test --format json | cucumber-junit > test-result.xml",
+    "test-with-coverage": "./node_modules/.bin/istanbul test ./node_modules/.bin/cucumber-js -r ./test",
     "examples": "node ./examples/addNumber.js"
   },
   "devDependencies": {
-    "cucumber": "^1.2.1",
-    "cucumber-junit": "^1.5.0"
+    "cucumber": "~1.2.1",
+    "istanbul": "~0.4.4"
   },
   "engines" : {
     "node" : ">=5.6.0",
