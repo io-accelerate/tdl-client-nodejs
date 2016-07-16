@@ -2,65 +2,64 @@
 
 var http = require('http');
 
-http.get({
-    host: 'personatestuser.org',
-    path: '/email'
-}, function(response) {
-    // Continuously update stream with data
-    var body = '';
-    response.on('data', function(d) {
-        body += d;
-    });
-    response.on('end', function() {
+var onSuccessfulResponse = function (callback) {
+    return function (res) {
+        if (res.statusCode != 200) {
+            throw "Request to failed with status: " + res.statusCode + ", message = "+res.statusMessage
+        }
 
-        // Data reception is done, do whatever with it!
-        var parsed = JSON.parse(body);
-        callback({
-            email: parsed.email,
-            password: parsed.pass
+        var body = '';
+        res.on('data', function (d) {
+            body += d;
         });
-    });
-});
-
-var JolokiaSession = function () {};
-
-JolokiaSession.connect = function (host, admin_port, callback) {
-    // var jolokia_url = "http://#{host}:#{admin_port}/api/jolokia";
-    // var endpoint = '/version';
-
-    function simpleGet() {
-        return http.get({
-            host: host,
-            port: admin_port,
-            path: '/api/jolokia/version'
-        }, function(res) {
-            console.log('STATUS: ' + res.statusCode);
-            console.log('HEADERS: ' + JSON.stringify(res.headers));
-            res.setEncoding('utf8');
-            res.on('data', function (chunk) {
-                console.log('BODY: ' + chunk);
-            });
+        res.on('end', function () {
+            callback(body);
         });
     }
-
-    simpleGet();
-    // var jolokia_version = JSON.parse(simpleGet()).value.agent;
-
-    // var jolokia_version = '1.1.1';
-    // var expected_jolokia_version = '1.2.2';
-    //
-    // if (jolokia_version != expected_jolokia_version) {
-    //     throw "Failed to retrieve the right Jolokia version. Expected: #{expected_jolokia_version} got #{jolokia_version}";
-    // }
-
-    callback(new JolokiaSession("ses"));
 };
 
-// JolokiaSession.prototype.request = function () {
-//
-//     return {
-//         'X' : 'Y'
-//     }
-// };
+//~~~~~ Class definition
+
+var JolokiaSession = function (host, adminPort) {
+    this.host = host;
+    this.adminPort = adminPort;
+};
+
+JolokiaSession.connect = function (host, admin_port, onConnectCallback) {
+    var req = http.request({
+        method: 'GET',
+        host: host,
+        port: admin_port,
+        path: '/api/jolokia/version'
+    }, onSuccessfulResponse(function (body) {
+        var jolokia_version = JSON.parse(body).value.agent;
+        var expected_jolokia_version = '1.2.2';
+
+        if (jolokia_version != expected_jolokia_version) {
+            throw "Failed to retrieve the right Jolokia version. Expected: "+expected_jolokia_version+" got "+jolokia_version;
+        }
+
+        onConnectCallback(new JolokiaSession(host, admin_port))
+    }));
+
+    req.end();
+};
+
+JolokiaSession.prototype.request = function (jolokiaPayload, onResponseCallback) {
+    var jsonPayload = JSON.stringify(jolokiaPayload);
+
+    var req = http.request({
+        method: 'POST',
+        host: this.host,
+        port: this.adminPort,
+        path: '/api/jolokia'
+    }, onSuccessfulResponse(function (body) {
+        var responseValue = JSON.parse(body).value;
+        onResponseCallback(responseValue)
+    }));
+
+    req.write(jsonPayload);
+    req.end();
+};
 
 module.exports = JolokiaSession;
