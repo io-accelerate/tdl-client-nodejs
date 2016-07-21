@@ -25,13 +25,15 @@ var JolokiaSession = function (host, adminPort) {
     this.adminPort = adminPort;
 };
 
-JolokiaSession.connect = function (host, admin_port, onConnectCallback) {
+JolokiaSession.connect = function (host, admin_port, callback) {
+    console.log("Connecting to " + host + ":" +admin_port);
     var req = http.request({
         method: 'GET',
         host: host,
         port: admin_port,
         path: '/api/jolokia/version'
     }, onSuccessfulResponse(function (body) {
+        console.log("Connected");
         var jolokia_version = JSON.parse(body).value.agent;
         var expected_jolokia_version = '1.2.2';
 
@@ -39,13 +41,13 @@ JolokiaSession.connect = function (host, admin_port, onConnectCallback) {
             throw "Failed to retrieve the right Jolokia version. Expected: "+expected_jolokia_version+" got "+jolokia_version;
         }
 
-        onConnectCallback(new JolokiaSession(host, admin_port))
+        callback(new JolokiaSession(host, admin_port))
     }));
 
     req.end();
 };
 
-JolokiaSession.prototype.request = function (jolokiaPayload, onResponseCallback) {
+JolokiaSession.prototype.request = function (jolokiaPayload, callback) {
     var jsonPayload = JSON.stringify(jolokiaPayload);
 
     var req = http.request({
@@ -55,7 +57,7 @@ JolokiaSession.prototype.request = function (jolokiaPayload, onResponseCallback)
         path: '/api/jolokia'
     }, onSuccessfulResponse(function (body) {
         var responseValue = JSON.parse(body).value;
-        onResponseCallback(responseValue)
+        callback(responseValue)
     }));
 
     req.write(jsonPayload);

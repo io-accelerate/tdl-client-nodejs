@@ -1,8 +1,8 @@
 'use strict';
 
-var Calculator = require('../../lib/client.js');
+function World() { }
 
 module.exports = function () {
-  //noinspection JSUnusedGlobalSymbols
-  this.World = Calculator;
+    //noinspection JSUnusedGlobalSymbols
+    this.World = World;
 };

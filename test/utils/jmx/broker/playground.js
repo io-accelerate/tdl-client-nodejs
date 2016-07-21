@@ -92,5 +92,7 @@ var purge = function (callback) {
 };
 
 
-JolokiaSession.connect('localhost', 28161,
-    inspectSession(addQueue(sendTextMessage(readQueueSize(browseQueues(purge()))))));
+if (!module.parent) {
+    JolokiaSession.connect('localhost', 28161,
+        inspectSession(addQueue(sendTextMessage(readQueueSize(browseQueues(purge()))))));
+}

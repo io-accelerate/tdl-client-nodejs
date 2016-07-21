@@ -1,7 +1,7 @@
 'use strict';
 
-var tdl = require('..');
+var TDL = require('..');
 
 
 //noinspection JSUnusedLocalSymbols
-var Client = tdl.Client;
+var Client = TDL.Client;

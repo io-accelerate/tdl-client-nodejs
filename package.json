@@ -3,19 +3,24 @@
   "version": "0.0.1",
   "main": "tdl.js",
   "author": "julianghionoiu",
-  "license" : "Apache-2.0",
+  "license": "Apache-2.0",
   "scripts": {
     "test": "./node_modules/.bin/cucumber-js -r ./test",
     "test-with-coverage": "./node_modules/.bin/istanbul test ./node_modules/.bin/cucumber-js -r ./test",
     "examples": "node ./examples/addNumber.js"
   },
-  "devDependencies": {
-    "cucumber": "~1.2.1",
-    "istanbul": "~0.4.4",
-    "coveralls": "~2.11.11"
+  "dependencies": {
+    "promise": "^7.1.1",
+    "stomp-client": "~0.8.1"
   },
-  "engines" : {
-    "node" : ">=5.6.0",
-    "npm" : ">=3.6.0"
+  "devDependencies": {
+    "chai": "~3.5.0",
+    "coveralls": "~2.11.11",
+    "cucumber": "~1.2.1",
+    "istanbul": "~0.4.4"
+  },
+  "engines": {
+    "node": ">=5.6.0",
+    "npm": ">=3.6.0"
   }
 }
