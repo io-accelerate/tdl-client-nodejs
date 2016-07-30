@@ -49,7 +49,7 @@ module.exports = function () {
         // Send messages sequentially
         var sendAllMessages = table.raw().reduce(function (p, row) {
             console.log("Send: " + row);
-            return p.then(world.requestQueue.sendTextMessage(row[0]))
+            return p.then(function () { return world.requestQueue.sendTextMessage(row[0])})
         }, Promise.resolve());
 
         sendAllMessages.then(proceed(callback), orReportException(callback));
