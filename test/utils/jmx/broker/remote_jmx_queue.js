@@ -60,17 +60,15 @@ RemoteJmxQueue.prototype.getMessageContents = function () {
             mbean: self.queueBean,
             operation: 'browse()'
         };
-        self.jolokiaSession.request(operation, function (composite_data) {
+        self.jolokiaSession.request(operation, function (compositeDataArray) {
             var messages;
-            if ('Text' in composite_data) {
-                messages = composite_data.map(function (compositeData) {
+            messages = compositeDataArray.map(function (compositeData) {
+                if ('Text' in compositeData) {
                     return compositeData['Text'];
-                });
-            } else {
-                messages = composite_data.map(function (compositeData) {
+                } else {
                     return new Buffer(compositeData['BodyPreview']).toString('utf8');
-                });
-            }
+                }
+            });
             console.log("browseQueues.response.messages = ", messages);
 
             fulfill(messages);
