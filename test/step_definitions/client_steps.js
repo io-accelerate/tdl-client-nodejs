@@ -114,8 +114,10 @@ module.exports = function () {
     });
 
     this.Then(/^the client should consume first request$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback(null, 'pending');
+        var world = this;
+        world.requestQueue.getSize().then(function (size) {
+            assert.equal(size, world.requestCount - 1, 'Requests have not been consumed');
+        }).then(proceed(callback), orReportException(callback));
     });
 
     this.Then(/^the client should publish the following responses:$/, function (table, callback) {
@@ -146,7 +148,6 @@ module.exports = function () {
         world.responseQueue.getSize().then(function (size) {
             assert.equal(size, 0, 'The response queue has different size. Messages have been published');
         }).then(proceed(callback), orReportException(callback));
-
     });
 
     this.Then(/^I should get no exception$/, function (callback) {
