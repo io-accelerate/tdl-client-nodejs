@@ -44,7 +44,7 @@ module.exports = function () {
     this.Given(/^I receive the following requests:$/, function (table, callback) {
         var world = this;
         console.log("table: " + util.inspect(table.raw()));
-        world.requestCount = table.raw.length;
+        world.requestCount = table.raw().length;
 
         // Send messages sequentially
         var sendAllMessages = table.raw().reduce(function (p, row) {
