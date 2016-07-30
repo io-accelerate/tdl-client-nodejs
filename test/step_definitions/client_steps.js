@@ -48,6 +48,7 @@ module.exports = function () {
 
         // Send messages sequentially
         var sendAllMessages = table.raw().reduce(function (p, row) {
+            console.log("Send: " + row);
             return p.then(world.requestQueue.sendTextMessage(row[0]))
         }, Promise.resolve());
 

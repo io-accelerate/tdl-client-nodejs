@@ -30,8 +30,8 @@ RemoteJmxQueue.prototype.sendTextMessage = function (request) {
             operation: 'sendTextMessage(java.lang.String)',
             arguments: [request]
         };
-        self.jolokiaSession.request(operation, function (data) {
-            console.log("sendTextMessage.response = ", data);
+        self.jolokiaSession.request(operation, function (messageId) {
+            console.log("sendTextMessage %s = %s", messageId, request);
             fulfill();
         });
     });
