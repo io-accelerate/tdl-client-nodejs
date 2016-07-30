@@ -86,8 +86,19 @@ module.exports = function () {
         }
     }
 
+    var ClientActions = TDL.ClientActions;
+    const CLIENT_ACTIONS = {
+        'publish': ClientActions.publish(),
+        'stop': ClientActions.stop(),
+        'publish and stop': ClientActions.publishAndStop()
+    };
+
     function asAction(actionName) {
-        return actionName;
+        if (actionName in CLIENT_ACTIONS) {
+            return CLIENT_ACTIONS[actionName]
+        } else {
+            throw Error("Not a valid action reference: "+call)
+        }
     }
 
     this.When(/^I go live with the following processing rules:$/, function (table, callback) {
