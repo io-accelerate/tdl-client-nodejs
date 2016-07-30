@@ -57,21 +57,46 @@ module.exports = function () {
 
     // ~~~~~ Implementations
 
+    const USER_IMPLEMENTATIONS = {
+        'add two numbers': function (x, y) {
+            return x + y
+        },
+        'return null': function () {
+            return null
+        },
+        'throw exception': function () {
+            throw new Error()
+        },
+        'some logic': function (value) {
+            return value
+        },
+        'increment number': function (x) {
+            return x + 1
+        },
+        'echo the request': function (x) {
+            return x
+        }
+    };
 
+    function asImplementation(call) {
+        if (call in USER_IMPLEMENTATIONS) {
+            return USER_IMPLEMENTATIONS[call]
+        } else {
+            throw Error("Not a valid implementation reference: "+call)
+        }
+    }
+
+    function asAction(actionName) {
+        return actionName;
+    }
 
     this.When(/^I go live with the following processing rules:$/, function (table, callback) {
         var world = this;
-
         var processingRules = new TDL.ProcessingRules();
-        table.hashes().forEach(function (rowObj) {
-            processingRules.on(rowObj['Method']).call(rowObj['Call']).then(rowObj['Action'])
+        table.hashes().forEach(function (row) {
+            processingRules.on(row['Method']).call(asImplementation(row['Call'])).then(asAction(row['Action']))
         });
 
-        console.log(util.inspect(processingRules));
-        // var processingRules = {
-        //     sum: { clientAction : "publish" },
-        //     increment: { clientAction : "publish" }
-        // };
         world.client.goLiveWith(processingRules)
             .then(proceed(callback), orReportException(callback));
     });
