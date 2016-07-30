@@ -57,41 +57,13 @@ module.exports = function () {
 
     // ~~~~~ Implementations
 
+
+
     this.When(/^I go live with the following processing rules:$/, function (table, callback) {
         var world = this;
 
-        var Builder = function(instance, methodName) {
-            this.instance = instance;
-            this.methodName = methodName;
-            return this;
-        };
-        Builder.prototype.call = function (userImplementation) {
-            this.userImplementation = userImplementation;
-            return this;
-        };
-        Builder.prototype.then = function (clientAction) {
-            this.instance.add(this.methodName, this.userImplementation, clientAction)
-        };
-
-        //noinspection JSUnusedGlobalSymbols
-        var processingRules = {
-            rules: {},
-
-           on: function (methodName) {
-               return new Builder(this, methodName);
-           },
-
-           add: function (methodName, userImplementation, clientAction) {
-               this.rules[methodName] = { userImplementation: userImplementation, clientAction: clientAction}
-           },
-
-            getResponseFor: function (request) {
-                var processingRule = this.rules[request.method];
-                return { id: request.id, result: "x", clientAction: processingRule.clientAction}
-            }
-        };
+        var processingRules = new TDL.ProcessingRules();
         table.hashes().forEach(function (rowObj) {
-            console.log("rowObj: ", util.inspect(rowObj));
             processingRules.on(rowObj['Method']).call(rowObj['Call']).then(rowObj['Action'])
         });
 
