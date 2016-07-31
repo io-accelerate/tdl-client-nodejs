@@ -159,8 +159,8 @@ module.exports = function () {
     });
 
     this.Then(/^I should get no exception$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback(null, 'pending');
+        //if you get here there were no exceptions
+        callback();
     });
 };
 
