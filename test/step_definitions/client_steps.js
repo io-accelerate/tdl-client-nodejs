@@ -38,7 +38,7 @@ module.exports = function () {
 
     this.Given(/^the broker is not available$/, function (callback) {
         var world = this;
-        world.client = new TDL.Client({hostname: HOSTNAME+"X", port: STOMP_PORT, uniqueId: UNIQUE_ID});
+        world.client = new TDL.Client({hostname: HOSTNAME, port: STOMP_PORT+1, uniqueId: UNIQUE_ID});
         callback();
     });
 
