@@ -14,7 +14,7 @@ RemoteJmxQueue.prototype.purge = function () {
             mbean: self.queueBean,
             operation: 'purge()'
         };
-        console.log("Purging queue: " + self.queueName);
+        console.log("Purging queue: " + self.queueBean);
         self.jolokiaSession.request(operation, function () {
             fulfill(self)
         });

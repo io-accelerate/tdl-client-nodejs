@@ -2,6 +2,7 @@
 var util = require('util');
 var Promise = require('promise');
 var assert = require('chai').assert;
+var intercept = require("intercept-stdout");
 
 var RemoteJmxBroker = require('../utils/jmx/broker/remote_jmx_broker.js');
 var TDL = require('../..');
@@ -14,7 +15,6 @@ const BROKER_NAME = 'TEST.BROKER';
 // Broker client definition
 const STOMP_PORT = 21613;
 const UNIQUE_ID = 'test@example.com';
-
 
 module.exports = function () {
 
@@ -37,8 +37,9 @@ module.exports = function () {
     });
 
     this.Given(/^the broker is not available$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback(null, 'pending');
+        var world = this;
+        world.client = new TDL.Client({hostname: HOSTNAME+"X", port: STOMP_PORT, uniqueId: UNIQUE_ID});
+        callback();
     });
 
     this.Given(/^I receive the following requests:$/, function (table, callback) {
@@ -103,13 +104,21 @@ module.exports = function () {
 
     this.When(/^I go live with the following processing rules:$/, function (table, callback) {
         var world = this;
+
+        //Read the rules from table
         var processingRules = new TDL.ProcessingRules();
         table.hashes().forEach(function (row) {
             processingRules.on(row['Method']).call(asImplementation(row['Call'])).then(asAction(row['Action']))
         });
 
+        //Setup log capture then run
+        startIntercept(world);
+        var logThenCallback = function () {
+            endIntercept(world);
+            callback();
+        };
         world.client.goLiveWith(processingRules)
-            .then(proceed(callback), orReportException(callback));
+            .then(proceed(logThenCallback), orReportException(logThenCallback));
     });
 
     // ~~~~~ Assertions
@@ -140,8 +149,12 @@ module.exports = function () {
     });
 
     this.Then(/^the client should display to console:$/, function (table, callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback(null, 'pending');
+        var world = this;
+        Promise.resolve(world.capturedText).then(function (capturedText) {
+            table.raw().forEach(function (row) {
+                assert.include(capturedText, row);
+            });
+        }).then(proceed(callback), orReportException(callback));
     });
 
     this.Then(/^the client should not consume any request$/, function (callback) {
@@ -165,6 +178,17 @@ module.exports = function () {
 };
 
 // ~~~~~ Helpers
+
+function startIntercept(world) {
+    world.capturedText = '';
+    world.unhookIntercept = intercept(function(txt) {
+        world.capturedText += txt;
+    });
+}
+
+function endIntercept(world) {
+    world.unhookIntercept();
+}
 
 function proceed(callback) {
     return function() {

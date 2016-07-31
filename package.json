@@ -17,6 +17,7 @@
     "chai": "~3.5.0",
     "coveralls": "~2.11.11",
     "cucumber": "~1.2.1",
+    "intercept-stdout": "~0.1.2",
     "istanbul": "~0.4.4"
   },
   "engines": {
