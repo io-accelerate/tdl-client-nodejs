@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "test": "./node_modules/.bin/cucumber-js -r ./test",
-    "test-with-coverage": "./node_modules/.bin/istanbul test ./node_modules/.bin/cucumber-js -- -r ./test",
+    "test-with-coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/cucumber-js -- -r ./test",
     "examples": "node ./examples/addNumber.js"
   },
   "dependencies": {
