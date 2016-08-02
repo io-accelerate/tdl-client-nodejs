@@ -1,7 +1,8 @@
 {
-  "name": "tdl",
-  "version": "0.0.1",
-  "main": "tdl.js",
+  "name": "tdl-client",
+  "version": "0.10.1",
+  "description": "A NodeJs client that allows users to get up to speed with the TDL system.",
+  "main": "tdl-client.js",
   "author": "julianghionoiu",
   "license": "Apache-2.0",
   "scripts": {
@@ -9,8 +10,12 @@
     "test-with-coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/cucumber-js -- -r ./test",
     "example": "node ./examples/add_numbers.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/julianghionoiu/tdl-client-nodejs"
+  },
   "dependencies": {
-    "promise": "^7.1.1",
+    "promise": "~7.1.1",
     "stompit": "~0.23.0"
   },
   "devDependencies": {

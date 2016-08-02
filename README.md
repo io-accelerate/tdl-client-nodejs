@@ -12,3 +12,20 @@
 `npm run example`
 
 If you want to run the Spec file in your IDE you need to pass `-r ./test` to cucumber-js
+
+
+## To release
+
+`npm login`
+
+`npm config ls`
+
+`npm version [patch|major|minor]`
+
+`npm publish`
+
+Then go to https://www.npmjs.com/~
+
+Other notes:
+- the major version needs to be changed in package.json
+- the deployment has not been configured to run on the CI server
