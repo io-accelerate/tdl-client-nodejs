@@ -3,8 +3,6 @@
   "version": "0.10.3",
   "description": "A NodeJs client that allows users to get up to speed with the TDL system.",
   "main": "tdl-client.js",
-  "author": "julianghionoiu",
-  "license": "Apache-2.0",
   "scripts": {
     "test": "./node_modules/.bin/cucumber-js -r ./test",
     "test-with-coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/cucumber-js -- -r ./test",
@@ -28,5 +26,16 @@
   "engines": {
     "node": ">=5.6.0",
     "npm": ">=3.6.0"
-  }
+  },
+  "keywords": [
+    "tdl",
+    "befaster",
+    "activemq"
+  ],
+  "author": "Julian Ghionoiu",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/julianghionoiu/tdl-client-nodejs/issues"
+  },
+  "homepage": "https://github.com/julianghionoiu/tdl-client-nodejs#readme"
 }
