@@ -7,7 +7,7 @@
   "scripts": {
     "test": "./node_modules/.bin/cucumber-js -r ./test",
     "test-with-coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/cucumber-js -- -r ./test",
-    "examples": "node ./examples/addNumber.js"
+    "example": "node ./examples/add_numbers.js"
   },
   "dependencies": {
     "promise": "^7.1.1",
