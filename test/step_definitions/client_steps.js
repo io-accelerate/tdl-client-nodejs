@@ -32,7 +32,7 @@ module.exports = function () {
             console.log("Saving queues: " + queues);
             world.requestQueue = queues[0];
             world.responseQueue = queues[1];
-            world.client = new TDL.Client({hostname: HOSTNAME, port: STOMP_PORT, uniqueId: UNIQUE_ID});
+            world.client = new TDL.Client({hostname: HOSTNAME, port: STOMP_PORT, uniqueId: UNIQUE_ID, timeToWaitForRequests: 1000});
         }).then(proceed(callback), orReportException(callback));
     });
 
