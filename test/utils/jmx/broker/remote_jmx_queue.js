@@ -2,8 +2,16 @@
 
 
 var RemoteJmxQueue = function (jolokiaSession, brokerName, queueName) {
+    this.name = queueName;
     this.jolokiaSession = jolokiaSession;
     this.queueBean = 'org.apache.activemq:type=Broker,brokerName=' + brokerName + ',destinationType=Queue,destinationName=' + queueName;
+};
+
+RemoteJmxQueue.prototype.getName = function () {
+    var self = this;
+    return new Promise(function (fulfill) {
+        fulfill(self.name)
+    });
 };
 
 RemoteJmxQueue.prototype.purge = function () {

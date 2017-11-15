@@ -14,32 +14,56 @@ const BROKER_NAME = 'TEST.BROKER';
 
 // Broker client definition
 const STOMP_PORT = 21613;
-const UNIQUE_ID = 'test@example.com';
 
 module.exports = function () {
 
     // ~~~~~ Setup
 
-    this.Given(/^I start with a clean broker$/, function (callback) {
+    this.Given(/^I start with a clean broker and a client for user "([^"]*)"$/, function (username, callback) {
         var world = this;
+        var uniqueId = username;
         RemoteJmxBroker.connect(HOSTNAME, JMX_PORT, BROKER_NAME).then(function (broker) {
             world.broker = broker;
             return Promise.all([
-                broker.addQueueAndPurge(UNIQUE_ID + ".req"),
-                broker.addQueueAndPurge(UNIQUE_ID + ".resp")
+                broker.addQueueAndPurge(uniqueId + ".req"),
+                broker.addQueueAndPurge(uniqueId + ".resp")
                 ]);
         }).then(function (queues) {
             console.log("Saving queues: " + queues);
             world.requestQueue = queues[0];
             world.responseQueue = queues[1];
-            world.client = new TDL.Client({hostname: HOSTNAME, port: STOMP_PORT, uniqueId: UNIQUE_ID, timeToWaitForRequests: 500});
+            world.client = new TDL.Client({hostname: HOSTNAME, port: STOMP_PORT, uniqueId: uniqueId});
         }).then(proceed(callback), orReportException(callback));
     });
 
     this.Given(/^the broker is not available$/, function (callback) {
         var world = this;
-        world.client = new TDL.Client({hostname: "111", port: STOMP_PORT, uniqueId: UNIQUE_ID});
+        world.client = new TDL.Client({hostname: "111", port: STOMP_PORT, uniqueId: "x"});
         callback();
+    });
+
+    this.Then(/^the time to wait for requests is (\d+)ms$/, function (expectedTimeout, callback) {
+        var world = this;
+        world.client.getRequestTimeoutMillis().then(function (timeout) {
+            assert.equal(timeout, expectedTimeout,
+                "The client request timeout has a different value.");
+        }).then(proceed(callback), orReportException(callback));
+    });
+
+    this.Then(/^the request queue is "([^"]*)"$/, function (expectedValue, callback) {
+        var world = this;
+        world.requestQueue.getName().then(function (name) {
+            assert.equal(name, expectedValue,
+                "Request queue has a different value.");
+        }).then(proceed(callback), orReportException(callback));
+    });
+
+    this.Then(/^the response queue is "([^"]*)"$/, function (expectedValue, callback) {
+        var world = this;
+        world.responseQueue.getName().then(function (name) {
+            assert.equal(name, expectedValue,
+                "Response queue has a different value.");
+        }).then(proceed(callback), orReportException(callback));
     });
 
     this.Given(/^I receive the following requests:$/, function (table, callback) {
@@ -57,6 +81,15 @@ module.exports = function () {
     });
 
     // ~~~~~ Implementations
+
+    function sleep(milliseconds) {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds){
+                break;
+            }
+        }
+    }
 
     const USER_IMPLEMENTATIONS = {
         'add two numbers': function (x, y) {
@@ -76,6 +109,10 @@ module.exports = function () {
         },
         'echo the request': function (x) {
             return x
+        },
+        'work for 500ms': function () {
+            sleep(10);
+            return "OK"
         }
     };
 
