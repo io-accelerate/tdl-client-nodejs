@@ -38,19 +38,19 @@ module.exports = function () {
 
     this.Given(/^the broker is not available$/, function (callback) {
         var world = this;
-        world.client = new TDL.Client({hostname: HOSTNAME, port: STOMP_PORT+1, uniqueId: UNIQUE_ID});
+        world.client = new TDL.Client({hostname: "111", port: STOMP_PORT, uniqueId: UNIQUE_ID});
         callback();
     });
 
     this.Given(/^I receive the following requests:$/, function (table, callback) {
         var world = this;
-        console.log("table: " + util.inspect(table.raw()));
-        world.requestCount = table.raw().length;
+        console.log("table: " + util.inspect(table.hashes()));
+        world.requestCount = table.hashes().length;
 
         // Send messages sequentially
-        var sendAllMessages = table.raw().reduce(function (p, row) {
+        var sendAllMessages = table.hashes().reduce(function (p, row) {
             console.log("Send: " + row);
-            return p.then(function () { return world.requestQueue.sendTextMessage(row[0])})
+            return p.then(function () { return world.requestQueue.sendTextMessage(row["payload"])})
         }, Promise.resolve());
 
         sendAllMessages.then(proceed(callback), orReportException(callback));
@@ -108,7 +108,7 @@ module.exports = function () {
         //Read the rules from table
         var processingRules = new TDL.ProcessingRules();
         table.hashes().forEach(function (row) {
-            processingRules.on(row['Method']).call(asImplementation(row['Call'])).then(asAction(row['Action']))
+            processingRules.on(row['method']).call(asImplementation(row['call'])).then(asAction(row['action']))
         });
 
         //Setup log capture then run
@@ -139,8 +139,8 @@ module.exports = function () {
 
     this.Then(/^the client should publish the following responses:$/, function (table, callback) {
         var world = this;
-        var expectedMessages = table.raw().map(function (row) {
-            return row[0];
+        var expectedMessages = table.hashes().map(function (row) {
+            return row['payload'];
         });
 
         world.responseQueue.getMessageContents().then(function (receivedMessages) {
@@ -151,8 +151,8 @@ module.exports = function () {
     this.Then(/^the client should display to console:$/, function (table, callback) {
         var world = this;
         Promise.resolve(world.capturedText).then(function (capturedText) {
-            table.raw().forEach(function (row) {
-                assert.include(capturedText, row);
+            table.hashes().forEach(function (row) {
+                assert.include(capturedText, row['output']);
             });
         }).then(proceed(callback), orReportException(callback));
     });
