@@ -110,8 +110,8 @@ module.exports = function () {
         'echo the request': function (x) {
             return x
         },
-        'work for 500ms': function () {
-            sleep(500);
+        'work for 600ms': function () {
+            sleep(600);
             return "OK"
         }
     };
