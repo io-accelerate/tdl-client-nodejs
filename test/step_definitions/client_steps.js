@@ -63,7 +63,7 @@ module.exports = function () {
         
         var repeatedRequests = [].concat.apply([], Array(+repeatCount).fill(table.hashes()));
         world.requestCount = repeatedRequests.length;
-        world.startProcessingTime = process.hrtime();
+        world.startProcessingTime = new Date();
         
         var sendAllMessages = repeatedRequests.reduce(function (p, row) {
             console.log("Send: " + util.inspect(row));
@@ -232,7 +232,8 @@ module.exports = function () {
 
     this.Then(/^the processing time should be lower than (\d+)ms$/, function(maxProcessingTime, callback) {
         var world = this;
-        var processingTime = getElapsedTimeInMs(world.startProcessingTime);
+        var processingTime = new Date() - world.startProcessingTime;
+        console.log('processing time: %dms', processingTime);
         assert.equal(processingTime < +maxProcessingTime, true, 'Actual processing time is slower than expected.');
         callback();
     });
@@ -268,8 +269,4 @@ function orReportException(callback) {
         }
         callback(err);
     };
-}
-
-function getElapsedTimeInMs(hrtime) {
-    return process.hrtime(hrtime)[1] / 1000000;
 }
