@@ -42,6 +42,37 @@ module.exports = function () {
         callback();
     });
 
+    this.Given(/^I receive the following requests:$/, function (table, callback) {
+        var world = this;
+        console.log("table: " + util.inspect(table.hashes()));
+        world.requestCount = table.hashes().length;
+        
+        // Send messages sequentially
+        var sendAllMessages = table.hashes().reduce(function (p, row) {
+            console.log("Send: " + row);
+            return p.then(function () { return world.requestQueue.sendTextMessage(row["payload"])})
+        }, Promise.resolve());
+
+        sendAllMessages.then(proceed(callback), orReportException(callback));
+    });
+
+    this.Given(/^I receive (\d+) identical requests like:$/, function (repeatCount, table, callback) {
+        var world = this;
+        console.log('repeat count: ' + repeatCount);
+        console.log("table: " + util.inspect(table.hashes()));
+        
+        var repeatedRequests = [].concat.apply([], Array(+repeatCount).fill(table.hashes()));
+        world.requestCount = repeatedRequests.length;
+        world.startProcessingTime = process.hrtime();
+        
+        var sendAllMessages = repeatedRequests.reduce(function (p, row) {
+            console.log("Send: " + util.inspect(row));
+            return p.then(function () { return world.requestQueue.sendTextMessage(row["payload"])});
+        }, Promise.resolve());
+
+        sendAllMessages.then(proceed(callback), orReportException(callback));
+    });
+
     this.Then(/^the time to wait for requests is (\d+)ms$/, function (expectedTimeout, callback) {
         var world = this;
         world.client.getRequestTimeoutMillis().then(function (timeout) {
@@ -64,20 +95,6 @@ module.exports = function () {
             assert.equal(name, expectedValue,
                 "Response queue has a different value.");
         }).then(proceed(callback), orReportException(callback));
-    });
-
-    this.Given(/^I receive the following requests:$/, function (table, callback) {
-        var world = this;
-        console.log("table: " + util.inspect(table.hashes()));
-        world.requestCount = table.hashes().length;
-
-        // Send messages sequentially
-        var sendAllMessages = table.hashes().reduce(function (p, row) {
-            console.log("Send: " + row);
-            return p.then(function () { return world.requestQueue.sendTextMessage(row["payload"])})
-        }, Promise.resolve());
-
-        sendAllMessages.then(proceed(callback), orReportException(callback));
     });
 
     // ~~~~~ Implementations
@@ -212,6 +229,13 @@ module.exports = function () {
         //if you get here there were no exceptions
         callback();
     });
+
+    this.Then(/^the processing time should be lower than (\d+)ms$/, function(maxProcessingTime, callback) {
+        var world = this;
+        var processingTime = getElapsedTimeInMs(world.startProcessingTime);
+        assert.equal(processingTime < +maxProcessingTime, true, 'Actual processing time is slower than expected.');
+        callback();
+    });
 };
 
 // ~~~~~ Helpers
@@ -244,4 +268,8 @@ function orReportException(callback) {
         }
         callback(err);
     };
+}
+
+function getElapsedTimeInMs(hrtime) {
+    return process.hrtime(hrtime)[1] / 1000000;
 }
