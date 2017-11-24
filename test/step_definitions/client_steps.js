@@ -234,7 +234,7 @@ module.exports = function () {
         var world = this;
         var processingTime = new Date() - world.startProcessingTime;
         console.log('processing time: %dms', processingTime);
-        assert.equal(processingTime < +maxProcessingTime, true, 'Actual processing time is slower than expected.');
+        assert.isBelow(processingTime, +maxProcessingTime, 'Actual processing time ' + processingTime + 'ms is slower than expected ' + maxProcessingTime + 'ms.');
         callback();
     });
 };
