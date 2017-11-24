@@ -111,7 +111,7 @@ module.exports = function () {
             return x
         },
         'work for 500ms': function () {
-            sleep(495);
+            sleep(500);
             return "OK"
         }
     };
