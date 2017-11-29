@@ -63,7 +63,6 @@ module.exports = function () {
         
         var repeatedRequests = [].concat.apply([], Array(+repeatCount).fill(table.hashes()));
         world.requestCount = repeatedRequests.length;
-        world.startProcessingTime = new Date();
         
         var sendAllMessages = repeatedRequests.reduce(function (p, row) {
             console.log("Send: " + util.inspect(row));
@@ -171,8 +170,15 @@ module.exports = function () {
             endIntercept(world);
             callback();
         };
+
+        var timestampBefore = new Date();
         world.client.goLiveWith(processingRules)
-            .then(proceed(logThenCallback), orReportException(logThenCallback));
+            .then(proceed(logThenCallback), orReportException(logThenCallback))
+            .then(function() {
+                var timestampAfter = new Date();
+                world.processingTime = timestampAfter - timestampBefore;
+                console.log('Processing time: %dms', world.processingTime);
+            });
     });
 
     // ~~~~~ Assertions
@@ -230,11 +236,9 @@ module.exports = function () {
         callback();
     });
 
-    this.Then(/^the processing time should be lower than (\d+)ms$/, function(maxProcessingTime, callback) {
+    this.Then(/^the processing time should be lower than (\d+)ms$/, function(threshold, callback) {
         var world = this;
-        var processingTime = new Date() - world.startProcessingTime;
-        console.log('processing time: %dms', processingTime);
-        assert.isBelow(processingTime, +maxProcessingTime, 'Actual processing time ' + processingTime + 'ms is slower than expected ' + maxProcessingTime + 'ms.');
+        assert.isBelow(world.processingTime, +threshold);
         callback();
     });
 };
