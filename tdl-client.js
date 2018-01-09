@@ -1,3 +1,3 @@
-exports.Client = require('./lib/client');
-exports.ProcessingRules = require('./lib/processing_rules');
-exports.ClientActions = require('./lib/actions/client_actions');
+exports.Client = require('./lib/queue/client');
+exports.ProcessingRules = require('./lib/queue/processing_rules');
+exports.ClientActions = require('./lib/queue/actions/client_actions');
