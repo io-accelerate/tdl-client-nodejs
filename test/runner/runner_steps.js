@@ -2,6 +2,10 @@
 
 const WiremockProcess = require('../utils/wiremock_process');
 const util = require('util');
+const ChallengeSessionConfig = require('../../lib/runner/challenge_session_config');
+const ChallengeSesstion = require('../../lib/runner/challenge_session');
+
+const TestActionProvider = require('./test_action_provider');
 
 module.exports = function() {
 
@@ -59,6 +63,7 @@ module.exports = function() {
     });
 
     this.Given(/^the action input comes from a provider returning "(.*)"$/, function(s, callback) {
+        TestActionProvider.set(s);
         callback();
     });
 
@@ -104,7 +109,26 @@ module.exports = function() {
     });
 
     this.When(/^user starts client$/, function(callback) {
-        callback();
+        var world = this;
+        try {
+            var config = ChallengeSessionConfig
+            .forJourneyId(world.journeyId)
+            .withServerHostname(world.challengeHostname)
+            .withPort(world.challengePort)
+            .withColours(true)
+            //.withAuditStream(world.auditStream)
+            .withRecordingSystemShouldBeOn(true);
+        
+        ChallengeSesstion
+            .forRunner(world.implementationRunner)
+            .withConfig(config)
+            .withActionProvider(TestActionProvider)
+            .start()
+            .then(() => callback());
+        } catch (error) {
+            console.log(error.message);
+        }
+        
     });
 
     this.Then(/^the server interaction should look like:$/, function(expectedOutput, callback) {
