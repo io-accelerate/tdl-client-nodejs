@@ -8,7 +8,7 @@ var TDL = require('../..');
 const testBroker = require('../test_broker');
 
 const HOSTNAME = 'localhost';
-const PORT = 21616;
+const PORT = 21613;
  
 module.exports = function () {
 
@@ -175,7 +175,7 @@ module.exports = function () {
         table.hashes().forEach(function (rule) {
             world.runnerBuilder.withSolutionFor(
                 rule.method,
-                rule.call,
+                asImplementation(rule.call),
                 asAction(rule.action));
         });
 
