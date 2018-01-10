@@ -58,6 +58,18 @@ module.exports = function() {
         callback();
     });
 
+    this.Given(/^the action input comes from a provider returning "(.*)"$/, function(s, callback) {
+        callback();
+    });
+
+    this.Given(/^the challenges folder is empty$/, function(callback) {
+        callback();
+    });
+
+    this.Given(/^there is an implementation runner that prints "(.*)"$/, function(s, callback) {
+        callback();
+    });
+
     this.Given(/^recording server is returning error$/, function(callback) {
         var world = this;
 
@@ -89,5 +101,33 @@ module.exports = function() {
                 verb: 'ANY'
             })
             .then(() => callback());
+    });
+
+    this.When(/^user starts client$/, function(callback) {
+        callback();
+    });
+
+    this.Then(/^the server interaction should look like:$/, function(expectedOutput, callback) {
+        callback();
+    });
+
+    this.Then(/^the file "(.*)" should contain$/, function(file, text, callback) {
+        callback();
+    });
+
+    this.Then(/^the recording system should be notified with "(.*)"$/, function(expectedOutput, callback) {
+        callback();
+    });
+
+    this.Then(/^the implementation runner should be run with the provided implementations$/, function(callback) {
+        callback();
+    });
+
+    this.Then(/^the server interaction should contain the following lines:$/, function(expectedOutput, callback) {
+        callback();
+    });
+
+    this.Then(/^the client should not ask the user for input$/, function(callback) {
+        callback();
     });
 }
