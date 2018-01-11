@@ -34,9 +34,9 @@ module.exports = function() {
         var world = this;
         
         table.hashes()
-            .reduce(function(prev, param) {
+            .reduce(function(prev, serverConfig) {
                 return prev.then(function() {
-                    return world.challengeServerStub.createNewMapping(param);
+                    return world.challengeServerStub.createNewMapping(serverConfig);
                 });
             }, Promise.resolve())
             .then(() => callback());
@@ -46,9 +46,9 @@ module.exports = function() {
         var world = this;
         
         table.hashes()
-            .reduce(function(prev, param) {
+            .reduce(function(prev, serverConfig) {
                 return prev.then(function() {
-                    return world.recordingServerStub.createNewMapping(param);
+                    return world.recordingServerStub.createNewMapping(serverConfig);
                 });
             }, Promise.resolve())
             .then(() => callback());
@@ -110,8 +110,8 @@ module.exports = function() {
 
     this.When(/^user starts client$/, function(callback) {
         var world = this;
-        try {
-            var config = ChallengeSessionConfig
+        
+        var config = ChallengeSessionConfig
             .forJourneyId(world.journeyId)
             .withServerHostname(world.challengeHostname)
             .withPort(world.challengePort)
@@ -125,10 +125,6 @@ module.exports = function() {
             .withActionProvider(TestActionProvider)
             .start()
             .then(() => callback());
-        } catch (error) {
-            console.log(error.message);
-        }
-        
     });
 
     this.Then(/^the server interaction should look like:$/, function(expectedOutput, callback) {
