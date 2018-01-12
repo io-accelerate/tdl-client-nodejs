@@ -1,11 +1,10 @@
 'use strict';
 
 const WiremockProcess = require('../utils/wiremock_process');
-const util = require('util');
 const ChallengeSessionConfig = require('../../lib/runner/challenge_session_config');
 const ChallengeSesstion = require('../../lib/runner/challenge_session');
-
 const TestActionProvider = require('./test_action_provider');
+const util = require('util');
 
 module.exports = function() {
 
@@ -85,7 +84,7 @@ module.exports = function() {
 
     this.Given(/^the challenge server returns (.*), response body ""(.*)"" for all requests$/, function(returnCode, body, callback) {
         var world = this;
-
+        
         world.challengeServerStub
             .createNewMapping({
                 endpointMatches: '^(.*)',
@@ -98,7 +97,7 @@ module.exports = function() {
 
     this.Given(/^the challenge server returns (.*) for all requests$/, function(returnCode, callback) {
         var world = this;
-
+        
         world.challengeServerStub
             .createNewMapping({
                 endpointMatches: '^(.*)',

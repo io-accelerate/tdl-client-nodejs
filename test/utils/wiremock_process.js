@@ -11,23 +11,40 @@ WiremockProcess.prototype.reset = function() {
 }
 
 WiremockProcess.prototype.createNewMapping = function(serverConfig) {
-    return this._postJson('__admin/mappings/new', {
+    var data = {
         request: {
-            urlPattern: serverConfig.endpointMatches,
-            url: serverConfig.endpointEquals,
-            method: serverConfig.verb,
-            headers: {
-                accept: {
-                    contains: serverConfig.acceptHeader
-                }
-            }
+            method: serverConfig.verb
         },
         response: {
-            body: serverConfig.responseBody,
-            statusMessage: serverConfig.statusMessage,
             status: serverConfig.status
         }
-    });
+    };
+
+    if (serverConfig.endpointEquals) {
+        data.request.url = serverConfig.endpointEquals;
+    }
+
+    if (serverConfig.endpointMatches) {
+        data.request.urlPattern = serverConfig.endpointMatches;
+    }
+
+    if (serverConfig.acceptHeader) {
+        data.request.headers = {
+            Accept: {
+                contains: serverConfig.acceptHeader
+            }
+        };
+    }
+
+    if (serverConfig.responseBody) {
+        data.response.body = serverConfig.responseBody;
+    }
+    
+    if (serverConfig.statusMessage) {
+        data.response.statusMessage = serverConfig.statusMessage;
+    }
+
+    return this._postJson('__admin/mappings/new', data);
 }
 
 WiremockProcess.prototype._postJson = function(method, data) {

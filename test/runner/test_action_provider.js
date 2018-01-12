@@ -5,8 +5,9 @@ function TestActionProvider() {
 }
 
 TestActionProvider.prototype.get = function() {
+    var self = this;
     return new Promise(function(resolve) {
-        resolve(this._value);
+        resolve(self._value);
     });
 };
 
