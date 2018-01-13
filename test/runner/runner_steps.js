@@ -1,5 +1,6 @@
 'use strict';
 
+const assert = require('chai').assert;
 const WiremockProcess = require('../utils/wiremock_process');
 const ChallengeSessionConfig = require('../../lib/runner/challenge_session_config');
 const ChallengeSesstion = require('../../lib/runner/challenge_session');
@@ -135,7 +136,12 @@ module.exports = function() {
     });
 
     this.Then(/^the recording system should be notified with "(.*)"$/, function(expectedOutput, callback) {
-        callback();
+        var world = this;
+
+        world.recordingServerStub.verifyEndpointWasHit('/notify', 'POST', expectedOutput).then(function(wasHit) {
+            assert.isTrue(wasHit);
+            callback();
+        });
     });
 
     this.Then(/^the implementation runner should be run with the provided implementations$/, function(callback) {

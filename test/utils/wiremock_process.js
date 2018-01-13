@@ -11,6 +11,8 @@ WiremockProcess.prototype.reset = function() {
 }
 
 WiremockProcess.prototype.createNewMapping = function(serverConfig) {
+    var self = this;
+
     var data = {
         request: {
             method: serverConfig.verb
@@ -44,8 +46,36 @@ WiremockProcess.prototype.createNewMapping = function(serverConfig) {
         data.response.statusMessage = serverConfig.statusMessage;
     }
 
-    return this._postJson('__admin/mappings/new', data);
+    return self._postJson('__admin/mappings/new', data);
 }
+
+WiremockProcess.prototype.VerifyEndpointWasHit = function(endpoint, methodType, body) {
+    var self = this;
+    
+    return new Promise(function(resolve) {
+        self._countRequestsWithEndpoint(endpoint, methodType, body)
+            .then(function(response) {
+                resolve(response.count == 1)
+            });
+    });
+};
+
+WiremockProcess.prototype._countRequestsWithEndpoint = function(endpoint, verb, body) {
+    var self = this;
+
+    var data = {
+        url: endpoint,
+        method: verb
+    };
+
+    if (body) {
+        data.bodyPatterns = [{
+            equalTo: body
+        }];
+    }
+
+    return self._postJson('__admin/requests/count', data);
+};
 
 WiremockProcess.prototype._postJson = function(method, data) {
     var self = this;
