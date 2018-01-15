@@ -1,5 +1,3 @@
-import { QueryBasedImplementationRunner } from '../../tdl-client';
-
 'use strict';
 
 var assert = require('chai').assert;
