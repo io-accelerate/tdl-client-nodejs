@@ -124,8 +124,8 @@ module.exports = function() {
 
     this.When(/^user starts client$/, function(callback) {
         var world = this;
-        
-        var config = ChallengeSessionConfig
+        try {
+            var config = ChallengeSessionConfig
             .forJourneyId(world.journeyId)
             .withServerHostname(world.challengeHostname)
             .withPort(world.challengePort)
@@ -134,15 +134,20 @@ module.exports = function() {
             .withRecordingSystemShouldBeOn(true);
         
         ChallengeSesstion
-            .forRunner(world.implementationRunner || new QueryBasedImplementationRunner())
+            .forRunner(world.implementationRunner || new QuietImplementationRunner())
             .withConfig(config)
             .withActionProvider(TestActionProvider)
             .start()
             .then(() => callback());
+        } catch (error) {
+            console.log(error);
+        }
+        
     });
 
     this.Then(/^the server interaction should look like:$/, function(expectedOutput, callback) {
         var total = TestAuditStream.getLog();
+        console.log(total);
         assert.equal(total, expectedOutput, 'Expected string is not contained in output');
         callback();
     });
