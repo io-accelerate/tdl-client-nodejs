@@ -1,11 +1,13 @@
 'use strict';
 
-const assert = require('chai').assert;
-const WiremockProcess = require('../utils/wiremock_process');
-const ChallengeSessionConfig = require('../../lib/runner/challenge_session_config');
-const ChallengeSesstion = require('../../lib/runner/challenge_session');
-const TestActionProvider = require('./test_action_provider');
-const util = require('util');
+var assert = require('chai').assert;
+var WiremockProcess = require('../utils/wiremock_process');
+var ChallengeSessionConfig = require('../../lib/runner/challenge_session_config');
+var ChallengeSesstion = require('../../lib/runner/challenge_session');
+var TestActionProvider = require('./test_action_provider');
+var util = require('util');
+var fs = require('fs');
+var path = require('path');
 
 module.exports = function() {
 
@@ -132,6 +134,16 @@ module.exports = function() {
     });
 
     this.Then(/^the file "(.*)" should contain$/, function(file, text, callback) {
+        var fileFullPath = path.join(tdlAppRoot, file);
+        console.log(fileFullPath);
+        try {
+            var fileContent = fs.readFileSync(fileFullPath);
+            console.log(fileContent);
+            assert.equal(fileContent, text, 'Contents of the file is not what is expected');    
+        } catch (error) {
+            console.log(error.message)
+        }
+        
         callback();
     });
 
