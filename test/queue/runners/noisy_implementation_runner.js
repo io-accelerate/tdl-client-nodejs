@@ -1,8 +1,7 @@
 'use strict';
 
-function NoisyImplementationRunner(deployMessage, auditStream) {
+function NoisyImplementationRunner(deployMessage) {
     this._deployMessage = deployMessage;
-    this._auditStream = auditStream;
 }
 
 NoisyImplementationRunner.prototype.run = function() {
@@ -11,6 +10,10 @@ NoisyImplementationRunner.prototype.run = function() {
         self._auditStream.log(self._deployMessage);
         resolve();
     });
+}
+
+NoisyImplementationRunner.prototype.setAuditStream = function(auditStream) {
+    this._auditStream = auditStream;
 }
 
 module.exports = NoisyImplementationRunner;

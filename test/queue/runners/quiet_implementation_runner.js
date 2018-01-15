@@ -11,4 +11,8 @@ QuietImplementationRunner.prototype.run = function() {
     });
 }
 
+QuietImplementationRunner.prototype.setAuditStream = function(auditStream) {
+
+}
+
 module.exports = QuietImplementationRunner;

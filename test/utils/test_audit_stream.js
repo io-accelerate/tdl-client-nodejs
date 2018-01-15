@@ -12,4 +12,4 @@ TestAuditStream.prototype.log = function(value) {
     this._log += `${value}\n`;
 }
 
-module.exports = new TestAuditStream();
+module.exports = TestAuditStream;

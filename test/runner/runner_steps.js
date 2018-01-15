@@ -84,7 +84,7 @@ module.exports = function() {
         var world = this;
 
         world.implementationRunnerMessage = s;
-        world.implementationRunner = new NoisyImplementationRunner(s, TestAuditStream);
+        world.implementationRunner = new NoisyImplementationRunner(s);
 
         callback();
     });
@@ -124,25 +124,36 @@ module.exports = function() {
 
     this.When(/^user starts client$/, function(callback) {
         var world = this;
-        
+        try {
+            world.auditStream = new TestAuditStream();
+
         var config = ChallengeSessionConfig
             .forJourneyId(world.journeyId)
             .withServerHostname(world.challengeHostname)
             .withPort(world.challengePort)
             .withColours(true)
-            .withAuditStream(TestAuditStream)
+            .withAuditStream(world.auditStream)
             .withRecordingSystemShouldBeOn(true);
-        
+
+        var runner = world.implementationRunner || new QuietImplementationRunner();
+        runner.setAuditStream(world.auditStream);
+
         ChallengeSesstion
-            .forRunner(world.implementationRunner || new QuietImplementationRunner())
+            .forRunner(runner)
             .withConfig(config)
             .withActionProvider(TestActionProvider)
             .start()
             .then(() => callback());
+        } catch (error) {
+            console.log(error.message);
+        }
+        
     });
 
     this.Then(/^the server interaction should look like:$/, function(expectedOutput, callback) {
-        var total = TestAuditStream.getLog();
+        var world = this;
+
+        var total = world.auditStream.getLog();
         assert.isTrue(total.indexOf(expectedOutput) !== -1, 'Expected string is not contained in output');
         callback();
     });
@@ -170,21 +181,26 @@ module.exports = function() {
     this.Then(/^the implementation runner should be run with the provided implementations$/, function(callback) {
         var world = this;
 
-        var total = TestAuditStream.getLog();
+        var total = world.auditStream.getLog();
         assert.isTrue(total.indexOf(world.implementationRunnerMessage) !== -1);
+        callback();
     });
 
     this.Then(/^the server interaction should contain the following lines:$/, function(expectedOutput, callback) {
-        var total = TestAuditStream.getLog();
+        var world = this;
+
+        var total = world.auditStream.getLog();
         var lines = expectedOutput.split('\n');
-        lines.forEach(function(value) {
+        lines.forEach(function(line) {
             assert.isTrue(total.indexOf(line) !== -1, 'Expected string is not contained in output');
         });
         callback();
     });
 
     this.Then(/^the client should not ask the user for input$/, function(callback) {
-        var total = TestAuditStream.getLog();
+        var world = this;
+
+        var total = world.auditStream.getLog();
         assert.isTrue(total.indexOf('Selected action is:') === -1);
         callback();
     });
