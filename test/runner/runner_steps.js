@@ -153,14 +153,11 @@ module.exports = function() {
 
     this.Then(/^the file "(.*)" should contain$/, function(file, text, callback) {
         var fileFullPath = path.join(tdlAppRoot, file);
-        console.log(fileFullPath);
-        try {
-            var fileContent = fs.readFileSync(fileFullPath);
-            console.log(fileContent);
-            assert.equal(fileContent, text, 'Contents of the file is not what is expected');    
-        } catch (error) {
-            console.log(error.message)
-        }
+        
+        var fileContent = fs.readFileSync(fileFullPath, 'utf8');
+        text = text.replace(/\n$/, '');
+        
+        assert.equal(fileContent, text, 'Contents of the file is not what is expected');    
         
         callback();
     });
