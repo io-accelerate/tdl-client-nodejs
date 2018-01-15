@@ -147,8 +147,7 @@ module.exports = function() {
 
     this.Then(/^the server interaction should look like:$/, function(expectedOutput, callback) {
         var total = TestAuditStream.getLog();
-        console.log(total);
-        assert.equal(total, expectedOutput, 'Expected string is not contained in output');
+        assert.isTrue(total.indexOf(expectedOutput) !== -1, 'Expected string is not contained in output');
         callback();
     });
 
