@@ -6,8 +6,9 @@ function NoisyImplementationRunner(deployMessage, auditStream) {
 }
 
 NoisyImplementationRunner.prototype.run = function() {
+    var self = this;
     return new Promise(function(resolve) {
-        this._auditStream.log(this._deployMessage);
+        self._auditStream.log(self._deployMessage);
         resolve();
     });
 }

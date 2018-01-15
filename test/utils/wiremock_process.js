@@ -49,7 +49,7 @@ WiremockProcess.prototype.createNewMapping = function(serverConfig) {
     return self._postJson('__admin/mappings/new', data);
 }
 
-WiremockProcess.prototype.VerifyEndpointWasHit = function(endpoint, methodType, body) {
+WiremockProcess.prototype.verifyEndpointWasHit = function(endpoint, methodType, body) {
     var self = this;
     
     return new Promise(function(resolve) {
@@ -86,7 +86,7 @@ WiremockProcess.prototype._postJson = function(method, data) {
             .headers({'Content-Type': 'application/json'})
             .send(data || {})
             .end(function(response) {
-                resolve(response);
+                resolve(response.body);
             });
     });
 }

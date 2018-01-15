@@ -124,8 +124,8 @@ module.exports = function() {
 
     this.When(/^user starts client$/, function(callback) {
         var world = this;
-        try {
-            var config = ChallengeSessionConfig
+        
+        var config = ChallengeSessionConfig
             .forJourneyId(world.journeyId)
             .withServerHostname(world.challengeHostname)
             .withPort(world.challengePort)
@@ -139,10 +139,6 @@ module.exports = function() {
             .withActionProvider(TestActionProvider)
             .start()
             .then(() => callback());
-        } catch (error) {
-            console.log(error);
-        }
-        
     });
 
     this.Then(/^the server interaction should look like:$/, function(expectedOutput, callback) {
