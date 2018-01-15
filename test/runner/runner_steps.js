@@ -1,3 +1,5 @@
+import { QueryBasedImplementationRunner } from '../../tdl-client';
+
 'use strict';
 
 var assert = require('chai').assert;
@@ -5,12 +7,16 @@ var WiremockProcess = require('../utils/wiremock_process');
 var ChallengeSessionConfig = require('../../lib/runner/challenge_session_config');
 var ChallengeSesstion = require('../../lib/runner/challenge_session');
 var TestActionProvider = require('./test_action_provider');
-var util = require('util');
+var TestAuditStream = require('../utils/test_audit_stream');
+var NoisyImplementationRunner = require('../queue/runners/noisy_implementation_runner');
+var QuietImplementationRunner = require('../queue/runners/quiet_implementation_runner');
+var util = require('util'); 
 var fs = require('fs');
 var path = require('path');
+var rimraf = require('rimraf');
 
 module.exports = function() {
-
+    
     this.Given(/^There is a challenge server running on "(.*)" port (.*)$/, function(hostname, port, callback) {
         var world = this;
 
@@ -70,10 +76,18 @@ module.exports = function() {
     });
 
     this.Given(/^the challenges folder is empty$/, function(callback) {
-        callback();
+        var challengesPath = path.join(tdlAppRoot, 'challenges');
+        rimraf(challengesPath, function(error) {
+            callback();
+        });
     });
 
     this.Given(/^there is an implementation runner that prints "(.*)"$/, function(s, callback) {
+        var world = this;
+
+        world.implementationRunnerMessage = s;
+        world.implementationRunner = new NoisyImplementationRunner(s, TestAuditStream);
+
         callback();
     });
 
@@ -118,11 +132,11 @@ module.exports = function() {
             .withServerHostname(world.challengeHostname)
             .withPort(world.challengePort)
             .withColours(true)
-            //.withAuditStream(world.auditStream)
+            .withAuditStream(TestAuditStream)
             .withRecordingSystemShouldBeOn(true);
         
         ChallengeSesstion
-            .forRunner(world.implementationRunner)
+            .forRunner(world.implementationRunner || new QueryBasedImplementationRunner())
             .withConfig(config)
             .withActionProvider(TestActionProvider)
             .start()
@@ -130,6 +144,8 @@ module.exports = function() {
     });
 
     this.Then(/^the server interaction should look like:$/, function(expectedOutput, callback) {
+        var total = TestAuditStream.getLog();
+        assert.equal(total, expectedOutput, 'Expected string is not contained in output');
         callback();
     });
 
@@ -157,14 +173,24 @@ module.exports = function() {
     });
 
     this.Then(/^the implementation runner should be run with the provided implementations$/, function(callback) {
-        callback();
+        var world = this;
+
+        var total = TestAuditStream.getLog();
+        assert.isTrue(total.indexOf(world.implementationRunnerMessage) !== -1);
     });
 
     this.Then(/^the server interaction should contain the following lines:$/, function(expectedOutput, callback) {
+        var total = TestAuditStream.getLog();
+        var lines = expectedOutput.split('\n');
+        lines.forEach(function(value) {
+            assert.isTrue(total.indexOf(line) !== -1, 'Expected string is not contained in output');
+        });
         callback();
     });
 
     this.Then(/^the client should not ask the user for input$/, function(callback) {
+        var total = TestAuditStream.getLog();
+        assert.isTrue(total.indexOf('Selected action is:') === -1);
         callback();
     });
 }
