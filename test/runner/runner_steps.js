@@ -1,17 +1,16 @@
 'use strict';
 
 var assert = require('chai').assert;
-var WiremockProcess = require('../utils/wiremock_process');
-var ChallengeSessionConfig = require('../../lib/runner/challenge_session_config');
-var ChallengeSesstion = require('../../lib/runner/challenge_session');
-var TestActionProvider = require('./test_action_provider');
-var TestAuditStream = require('../utils/test_audit_stream');
-var NoisyImplementationRunner = require('../queue/runners/noisy_implementation_runner');
-var QuietImplementationRunner = require('../queue/runners/quiet_implementation_runner');
-var util = require('util'); 
 var fs = require('fs');
 var path = require('path');
 var rimraf = require('rimraf');
+
+var TDL = require('../..');
+var WiremockProcess = require('./wiremock_process');
+var TestActionProvider = require('./test_action_provider');
+var TestAuditStream = require('./test_audit_stream');
+var NoisyImplementationRunner = require('../queue/runners/noisy_implementation_runner');
+var QuietImplementationRunner = require('../queue/runners/quiet_implementation_runner');
 
 module.exports = function() {
     
@@ -124,10 +123,10 @@ module.exports = function() {
 
     this.When(/^user starts client$/, function(callback) {
         var world = this;
-        try {
-            world.auditStream = new TestAuditStream();
+        
+        world.auditStream = new TestAuditStream();
 
-        var config = ChallengeSessionConfig
+        var config = TDL.ChallengeSessionConfig
             .forJourneyId(world.journeyId)
             .withServerHostname(world.challengeHostname)
             .withPort(world.challengePort)
@@ -138,16 +137,12 @@ module.exports = function() {
         var runner = world.implementationRunner || new QuietImplementationRunner();
         runner.setAuditStream(world.auditStream);
 
-        ChallengeSesstion
+        TDL.ChallengeSession
             .forRunner(runner)
             .withConfig(config)
             .withActionProvider(TestActionProvider)
             .start()
             .then(() => callback());
-        } catch (error) {
-            console.log(error.message);
-        }
-        
     });
 
     this.Then(/^the server interaction should look like:$/, function(expectedOutput, callback) {

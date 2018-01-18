@@ -5,6 +5,7 @@ var assert = require('chai').assert;
 var intercept = require("intercept-stdout");
 
 var TDL = require('../..');
+
 const testBroker = require('../test_broker');
 
 const HOSTNAME = 'localhost';
