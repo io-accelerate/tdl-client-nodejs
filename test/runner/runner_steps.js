@@ -97,7 +97,7 @@ module.exports = function() {
             .then(() => callback());
     });
 
-    this.Given(/^the challenge server returns (.*), response body ""(.*)"" for all requests$/, function(returnCode, body, callback) {
+    this.Given(/^the challenge server returns (\d+), response body "(.*)" for all requests$/, function(returnCode, body, callback) {
         var world = this;
         
         world.challengeServerStub
@@ -110,7 +110,7 @@ module.exports = function() {
             .then(() => callback());
     });
 
-    this.Given(/^the challenge server returns (.*) for all requests$/, function(returnCode, callback) {
+    this.Given(/^the challenge server returns (\d+) for all requests$/, function(returnCode, callback) {
         var world = this;
         
         world.challengeServerStub
