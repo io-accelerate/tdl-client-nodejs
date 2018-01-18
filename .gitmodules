@@ -6,4 +6,4 @@
 	url = git@github.com:julianghionoiu/tdl-client-test-broker.git
 [submodule "wiremock"]
 	path = wiremock
-	url = https://github.com/julianghionoiu/tdl-client-test-wiremock
+	url = git@github.com:julianghionoiu/tdl-client-test-wiremock.git
