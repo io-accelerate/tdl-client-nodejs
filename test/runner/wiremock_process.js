@@ -2,15 +2,15 @@
 
 var unirest = require('unirest');
 
-var WiremockProcess = function(hostname, port) {
-    this._serverUrl = `http://${hostname}:${port}`
-}
+var WiremockProcess = function (hostname, port) {
+    this._serverUrl = 'http://'+hostname+':'+port
+};
 
-WiremockProcess.prototype.reset = function() {
+WiremockProcess.prototype.reset = function () {
     return this._postJson('__admin/reset');
-}
+};
 
-WiremockProcess.prototype.createNewMapping = function(serverConfig) {
+WiremockProcess.prototype.createNewMapping = function (serverConfig) {
     var self = this;
 
     var data = {
@@ -41,13 +41,13 @@ WiremockProcess.prototype.createNewMapping = function(serverConfig) {
     if (serverConfig.responseBody) {
         data.response.body = serverConfig.responseBody;
     }
-    
+
     if (serverConfig.statusMessage) {
         data.response.statusMessage = serverConfig.statusMessage;
     }
 
     return self._postJson('__admin/mappings/new', data);
-}
+};
 
 WiremockProcess.prototype.verifyEndpointWasHit = function(endpoint, methodType, body) {
     var self = this;
@@ -55,7 +55,7 @@ WiremockProcess.prototype.verifyEndpointWasHit = function(endpoint, methodType, 
     return new Promise(function(resolve) {
         self._countRequestsWithEndpoint(endpoint, methodType, body)
             .then(function(response) {
-                resolve(response.count == 1)
+                resolve(response.count === 1)
             });
     });
 };
@@ -77,18 +77,18 @@ WiremockProcess.prototype._countRequestsWithEndpoint = function(endpoint, verb, 
     return self._postJson('__admin/requests/count', data);
 };
 
-WiremockProcess.prototype._postJson = function(method, data) {
+WiremockProcess.prototype._postJson = function (method, data) {
     var self = this;
 
-    return new Promise(function(resolve) {
+    return new Promise(function (resolve) {
         unirest
-            .post(`${self._serverUrl}/${method}`)
+            .post(self._serverUrl+'/'+method)
             .headers({'Content-Type': 'application/json'})
             .send(data || {})
-            .end(function(response) {
+            .end(function (response) {
                 resolve(response.body);
             });
     });
-}
+};
 
 module.exports = WiremockProcess;

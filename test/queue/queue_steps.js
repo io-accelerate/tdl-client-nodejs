@@ -284,7 +284,7 @@ function proceed(callback) {
 function orReportException(callback) {
     return function(err) {
         console.log("Oops. Error.");
-        if (err.constructor.name == 'AssertionError') {
+        if (err.constructor.name === 'AssertionError') {
             console.log("Assertion failed with: " + err.message);
             console.log("Expected: " + err.expected);
             console.log("Actual:   " + err.actual);

@@ -1,3 +1,5 @@
+"use strict";
+
 var RemoteJmxBroker = require('./utils/jmx/broker/remote_jmx_broker.js');
 
 function TestBroker() {
@@ -6,8 +8,8 @@ function TestBroker() {
     this._brokerName = 'TEST.BROKER';
 }
 
-TestBroker.prototype.connect = function() {
+TestBroker.prototype.connect = function () {
     return RemoteJmxBroker.connect(this._hostname, this._port, this._brokerName);
-}
+};
 
 module.exports = new TestBroker();
