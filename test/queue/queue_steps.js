@@ -4,41 +4,57 @@ var Promise = require('promise');
 var assert = require('chai').assert;
 var intercept = require("intercept-stdout");
 
-var RemoteJmxBroker = require('../utils/jmx/broker/remote_jmx_broker.js');
 var TDL = require('../..');
 
-// Jolokia JMX definition
+const testBroker = require('../test_broker');
+
 const HOSTNAME = 'localhost';
-const JMX_PORT = 28161;
-const BROKER_NAME = 'TEST.BROKER';
-
-// Broker client definition
-const STOMP_PORT = 21613;
-
+const PORT = 21613;
+ 
 module.exports = function () {
 
     // ~~~~~ Setup
 
     this.Given(/^I start with a clean broker and a client for user "([^"]*)"$/, function (username, callback) {
         var world = this;
-        var uniqueId = username;
-        RemoteJmxBroker.connect(HOSTNAME, JMX_PORT, BROKER_NAME).then(function (broker) {
-            world.broker = broker;
-            return Promise.all([
-                broker.addQueueAndPurge(uniqueId + ".req"),
-                broker.addQueueAndPurge(uniqueId + ".resp")
+
+        testBroker.connect()
+            .then(function (broker) {
+                world.broker = broker;
+                return Promise.all([
+                    broker.addQueueAndPurge(username + ".req"),
+                    broker.addQueueAndPurge(username + ".resp")
                 ]);
-        }).then(function (queues) {
-            console.log("Saving queues: " + queues);
-            world.requestQueue = queues[0];
-            world.responseQueue = queues[1];
-            world.client = new TDL.Client({hostname: HOSTNAME, port: STOMP_PORT, uniqueId: uniqueId});
-        }).then(proceed(callback), orReportException(callback));
+            })
+            .then(function (queues) {
+                console.log("Saving queues: " + queues);
+                world.requestQueue = queues[0];
+                world.responseQueue = queues[1];
+
+                var runnerConfig = new TDL.ImplementationRunnerConfig()
+                    .setHostname(HOSTNAME)
+                    .setPort(PORT)
+                    .setUniqueId(username);
+                
+                world.runnerBuilder = new TDL.QueryBasedImplementationRunnerBuilder()
+                    .setConfig(runnerConfig);
+
+                world.runner = world.runnerBuilder.create();
+            })
+            .then(proceed(callback), orReportException(callback));
     });
 
     this.Given(/^the broker is not available$/, function (callback) {
         var world = this;
-        world.client = new TDL.Client({hostname: "111", port: STOMP_PORT, uniqueId: "x"});
+
+        var runnerConfig = new TDL.ImplementationRunnerConfig()
+            .setHostname('111')
+            .setPort(PORT)
+            .setUniqueId('x');
+
+        world.runnerBuilder = new TDL.QueryBasedImplementationRunnerBuilder()
+            .setConfig(runnerConfig);
+
         callback();
     });
 
@@ -74,10 +90,9 @@ module.exports = function () {
 
     this.Then(/^the time to wait for requests is (\d+)ms$/, function (expectedTimeout, callback) {
         var world = this;
-        world.client.getRequestTimeoutMillis().then(function (timeout) {
-            assert.equal(timeout, expectedTimeout,
-                "The client request timeout has a different value.");
-        }).then(proceed(callback), orReportException(callback));
+            var actualTimeout = world.runner.getRequestTimeoutMillisecond();
+            assert.equal(actualTimeout, expectedTimeout, 'The client request timeout has a different value.');
+            callback();
     });
 
     this.Then(/^the request queue is "([^"]*)"$/, function (expectedValue, callback) {
@@ -157,12 +172,15 @@ module.exports = function () {
 
     this.When(/^I go live with the following processing rules:$/, function (table, callback) {
         var world = this;
-
-        //Read the rules from table
-        var processingRules = new TDL.ProcessingRules();
-        table.hashes().forEach(function (row) {
-            processingRules.on(row['method']).call(asImplementation(row['call'])).then(asAction(row['action']))
+        
+        table.hashes().forEach(function (rule) {
+            world.runnerBuilder.withSolutionFor(
+                rule.method,
+                asImplementation(rule.call),
+                asAction(rule.action));
         });
+
+        world.runner = world.runnerBuilder.create();
 
         //Setup log capture then run
         startIntercept(world);
@@ -172,7 +190,7 @@ module.exports = function () {
         };
 
         var timestampBefore = new Date();
-        world.client.goLiveWith(processingRules)
+        world.runner.run()
             .then(proceed(logThenCallback), orReportException(logThenCallback))
             .then(function() {
                 var timestampAfter = new Date();
@@ -266,7 +284,7 @@ function proceed(callback) {
 function orReportException(callback) {
     return function(err) {
         console.log("Oops. Error.");
-        if (err.constructor.name == 'AssertionError') {
+        if (err.constructor.name === 'AssertionError') {
             console.log("Assertion failed with: " + err.message);
             console.log("Expected: " + err.expected);
             console.log("Actual:   " + err.actual);
