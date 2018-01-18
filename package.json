@@ -1,6 +1,6 @@
 {
   "name": "tdl-client",
-  "version": "0.20.0",
+  "version": "0.20.1",
   "description": "A NodeJs client that allows users to get up to speed with the TDL system.",
   "main": "tdl-client.js",
   "scripts": {
