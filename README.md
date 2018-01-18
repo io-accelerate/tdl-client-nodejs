@@ -7,7 +7,21 @@
 
 `npm install`
 
-`npm test`
+To run the acceptance tests, start the WireMock servers:
+```
+python wiremock/wiremock-wrapper.py start 41375
+python wiremock/wiremock-wrapper.py start 8222
+```
+
+And the broker, with:
+```
+python broker/activemq-wrapper.py start
+```
+
+Run tests
+```
+npm test
+```
 
 `npm run example`
 

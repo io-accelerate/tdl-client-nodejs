@@ -1,3 +1,13 @@
-exports.Client = require('./lib/client');
-exports.ProcessingRules = require('./lib/processing_rules');
-exports.ClientActions = require('./lib/actions/client_actions');
+var path = require('path');
+global.tdlAppRoot = path.resolve(__dirname);
+
+exports.Client = require('./lib/queue/client');
+exports.ProcessingRules = require('./lib/queue/processing_rules');
+exports.ClientActions = require('./lib/queue/actions/client_actions');
+exports.AuditStream = require('./lib/audit/audit_stream');
+exports.ImplementationRunnerConfig = require('./lib/queue/implementation_runner_config.js');
+exports.QueryBasedImplementationRunner = require('./lib/queue/queue_based_implementation_runner');
+exports.QueryBasedImplementationRunnerBuilder = require('./lib/queue/queue_based_implementation_runner_builder');
+
+exports.ChallengeSessionConfig = require('./lib/runner/challenge_session_config');
+exports.ChallengeSession = require('./lib/runner/challenge_session');
