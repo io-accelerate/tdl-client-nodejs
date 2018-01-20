@@ -12,6 +12,8 @@ var TestAuditStream = require('./test_audit_stream');
 var NoisyImplementationRunner = require('../queue/runners/noisy_implementation_runner');
 var QuietImplementationRunner = require('../queue/runners/quiet_implementation_runner');
 
+var workingDirectory = './';
+
 module.exports = function () {
 
     this.Given(/^There is a challenge server running on "(.*)" port (.*)$/, function (hostname, port, callback) {
@@ -73,7 +75,7 @@ module.exports = function () {
     });
 
     this.Given(/^the challenges folder is empty$/, function (callback) {
-        var challengesPath = path.join(tdlAppRoot, 'challenges');
+        var challengesPath = path.join(workingDirectory, 'challenges');
         rimraf(challengesPath, callback);
     });
 
@@ -130,7 +132,8 @@ module.exports = function () {
             .withPort(world.challengePort)
             .withColours(true)
             .withAuditStream(world.auditStream)
-            .withRecordingSystemShouldBeOn(true);
+            .withRecordingSystemShouldBeOn(true)
+            .withWorkingDirectory(workingDirectory);
 
         var runner = world.implementationRunner || new QuietImplementationRunner();
         runner.setAuditStream(world.auditStream);
@@ -152,7 +155,7 @@ module.exports = function () {
     });
 
     this.Then(/^the file "(.*)" should contain$/, function (file, text, callback) {
-        var fileFullPath = path.join(tdlAppRoot, file);
+        var fileFullPath = path.join(workingDirectory, file);
 
         var fileContent = fs.readFileSync(fileFullPath, 'utf8');
         text = text.replace(/\n$/, '');
