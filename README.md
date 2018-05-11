@@ -34,7 +34,11 @@ If you want to run the Spec file in your IDE you need to pass `-r ./test` to cuc
 
 `npm config ls`
 
-`npm version [patch|major|minor]`
+For new version of Spec
+`npm version minor`
+
+For patches without changing the Spec
+`npm version patch`
 
 `npm publish`
 
