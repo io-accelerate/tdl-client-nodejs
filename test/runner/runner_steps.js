@@ -174,6 +174,15 @@ module.exports = function () {
         });
     });
 
+    this.Then(/^the recording system should have received a stop signal$/, function (callback) {
+        var world = this;
+
+        world.recordingServerStub.verifyEndpointWasHit('/stop', 'POST', "").then(function (wasHit) {
+            assert.isTrue(wasHit);
+            callback();
+        });
+    });
+
     this.Then(/^the implementation runner should be run with the provided implementations$/, function (callback) {
         var world = this;
 
