@@ -17,7 +17,7 @@ stopProcessAtPort() {
 
 stopWiremocks() {
     echo "~~~~~~~~~~ Stopping Wiremocks listening on ports 41375 and 8222 ~~~~~~~~~"
-    python wiremock/fetch-wiremock-and-run.py stop || true
+    python wiremock/wiremock-wrapper.py stop || true
 
     stopProcessAtPort 41375
     stopProcessAtPort 8222

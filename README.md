@@ -10,7 +10,7 @@
 Project contains submodules as mentioned in the `.gitmodules` file:
 
 - broker
-- src/test/resources/tdl/client (gets cloned into features)
+- tdl/client-spec (gets cloned into features)
 - wiremock 
 
 Use the below command to update the submodules of the project:
@@ -31,8 +31,8 @@ Stopping the above services would be the same, using the `stop` command instead 
 
 To run the acceptance tests, start the WireMock servers:
 ```
-python wiremock/wiremock-and-run.py start 41375
-python wiremock/wiremock-and-run.py start 8222
+python wiremock/wiremock-wrapper.py start 41375
+python wiremock/wiremock-wrapper.py start 8222
 ```
 
 And the broker, with:
@@ -54,13 +54,8 @@ Start and stop the wiremocks and broker services with the below:
 
 Then run the tests in RunAllAcceptanceTest.java via the CLI:
 
-```bash
-./gradlew test
-```
+**Run tests**
 
-Or via the IDE
-
-#### Run tests
 ```
 npm test
 ```
@@ -68,6 +63,8 @@ npm test
 `npm run example`
 
 If you want to run the Spec file in your IDE you need to pass `-r ./test` to cucumber-js
+
+or via the IDE
 
 ## To release
 
