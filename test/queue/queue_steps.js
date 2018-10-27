@@ -13,13 +13,13 @@ const PORT = 21613;
 
 module.exports = function() {
   // ~~~~~ Setup
-
+  // TODO: how do we implement this in NodeJS, like we did in Java, see https://github.com/julianghionoiu/tdl-client-java/commit/4475fc3b01bb3f6fbc2b2d423848f5dcec489461#diff-0672afec8f176ab43f4d558fe4023e5dR54
+  // Cucumber does not support .And() clause in NodeJS/JS
   this.Given(
     /^I start with a clean broker and a client for user "([^"]*)"$/,
     function(username, callback) {
       var world = this;
 
-      // TODO: see how this can be do different, read off config?
       let REQUEST_QUEUE_NAME = username + ".req";
       let RESPONSE_QUEUE_NAME = username + ".resp";
 
