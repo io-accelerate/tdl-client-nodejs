@@ -14,17 +14,17 @@ function runClient() {
   rules
     .on("display_description")
     .call(display)
-    .then();
+    .build();
   rules
     .on("sum")
     .call(sum)
-    .then();
+    .build();
   rules
     .on("end_round")
     .call(function() {
       return "OK";
     })
-    .then(publishAndStop());
+    .build();
 
   client.goLiveWith(rules);
 }
