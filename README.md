@@ -5,12 +5,34 @@
 
 # tdl-client-nodejs
 
+### Submodules
+
+Project contains submodules as mentioned in the `.gitmodules` file:
+
+- broker
+- src/test/resources/tdl/client (gets cloned into features)
+- wiremock 
+
+Use the below command to update the submodules of the project:
+
+```
+git submodule update --init
+```
+
+### Getting started
+
+Javascript client to connect to the central kata server.
+
+#### Manual 
+
+Stopping the above services would be the same, using the `stop` command instead of the `start` command.
+
 `npm install`
 
 To run the acceptance tests, start the WireMock servers:
 ```
-python wiremock/wiremock-wrapper.py start 41375
-python wiremock/wiremock-wrapper.py start 8222
+python wiremock/wiremock-and-run.py start 41375
+python wiremock/wiremock-and-run.py start 8222
 ```
 
 And the broker, with:
@@ -18,7 +40,27 @@ And the broker, with:
 python broker/activemq-wrapper.py start
 ```
 
-Run tests
+#### Automatic (via script)
+
+Start and stop the wiremocks and broker services with the below:
+ 
+```bash
+./startExternalDependencies.sh
+``` 
+
+```bash
+./stopExternalDependencies.sh
+``` 
+
+Then run the tests in RunAllAcceptanceTest.java via the CLI:
+
+```bash
+./gradlew test
+```
+
+Or via the IDE
+
+#### Run tests
 ```
 npm test
 ```
@@ -26,7 +68,6 @@ npm test
 `npm run example`
 
 If you want to run the Spec file in your IDE you need to pass `-r ./test` to cucumber-js
-
 
 ## To release
 
