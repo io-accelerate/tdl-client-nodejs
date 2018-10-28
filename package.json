@@ -5,7 +5,7 @@
   "main": "tdl-client.js",
   "scripts": {
     "test": "./node_modules/.bin/cucumber-js -S -r ./test",
-    "test-with-coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/cucumber-js -- -r ./test",
+    "test-with-coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/cucumber-js -- -S -r ./test",
     "example": "node ./examples/add_numbers.js"
   },
   "repository": {
