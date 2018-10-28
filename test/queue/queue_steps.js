@@ -161,6 +161,40 @@ module.exports = function() {
       .then(proceed(callback), orReportException(callback));
   });
 
+  this.Then(/^the client should consume one request$/, function(
+      expectedValue = 1,
+      callback
+  ) {
+      var world = this;
+      world.requestQueue
+          .getName()
+          .then(function(name) {
+              assert.equal(
+                  name,
+                  expectedValue,
+                  "Request queue has a different value."
+              );
+          })
+          .then(proceed(callback), orReportException(callback));
+  });
+
+  this.Then(/^the client should publish one response$/, function(
+      expectedValue = 1,
+      callback
+  ) {
+      var world = this;
+      world.responseQueue
+          .getName()
+          .then(function(name) {
+              assert.equal(
+                  name,
+                  expectedValue,
+                  "Response queue has a different value."
+              );
+          })
+          .then(proceed(callback), orReportException(callback));
+  });
+
   // ~~~~~ Implementations
 
   function sleep(milliseconds) {
