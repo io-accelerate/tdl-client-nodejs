@@ -6,10 +6,10 @@ var intercept = require("intercept-stdout");
 
 var TDL = require("../..");
 
-const testBroker = require("../test_broker");
+var testBroker = require("../test_broker");
 
-const HOSTNAME = "localhost";
-const PORT = 21613;
+var HOSTNAME = "localhost";
+var PORT = 21613;
 
 module.exports = function() {
   // ~~~~~ Setup
@@ -20,8 +20,8 @@ module.exports = function() {
     function(username, callback) {
       var world = this;
 
-      let REQUEST_QUEUE_NAME = username + ".req";
-      let RESPONSE_QUEUE_NAME = username + ".resp";
+      var REQUEST_QUEUE_NAME = username + ".req";
+      var RESPONSE_QUEUE_NAME = username + ".resp";
 
       testBroker
         .connect()
@@ -169,7 +169,7 @@ module.exports = function() {
     }
   }
 
-  const USER_IMPLEMENTATIONS = {
+    var USER_IMPLEMENTATIONS = {
     "add two numbers": function(x, y) {
       return x + y;
     },
