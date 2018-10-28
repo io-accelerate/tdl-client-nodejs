@@ -8,50 +8,53 @@ var TDL = require("../..");
 
 var testBroker = require("../test_broker");
 
-var HOSTNAME = "localhost";
-var PORT = 21613;
+const HOSTNAME = "localhost";
+const PORT = 21613;
+const REQUEST_QUEUE_NAME = "some-user-req";
+const RESPONSE_QUEUE_NAME = "some-user-resp";
 
 module.exports = function() {
   // ~~~~~ Setup
   // TODO: how do we implement this in NodeJS, like we did in Java, see https://github.com/julianghionoiu/tdl-client-java/commit/4475fc3b01bb3f6fbc2b2d423848f5dcec489461#diff-0672afec8f176ab43f4d558fe4023e5dR54
   // Cucumber does not support .And() clause in NodeJS/JS
   this.Given(
-    /^I start with a clean broker and a client for user "([^"]*)"$/,
-    function(username, callback) {
+    /^I start with a clean broker having a request and a response queue$/,
+    function(callback) {
       var world = this;
-
-      var REQUEST_QUEUE_NAME = username + ".req";
-      var RESPONSE_QUEUE_NAME = username + ".resp";
 
       testBroker
         .connect()
         .then(function(broker) {
           world.broker = broker;
-          return Promise.all([
-            broker.addQueueAndPurge(REQUEST_QUEUE_NAME),
-            broker.addQueueAndPurge(RESPONSE_QUEUE_NAME)
-          ]);
-        })
-        .then(function(queues) {
-          console.log("Saving queues: " + queues);
-          world.requestQueue = queues[0];
-          world.responseQueue = queues[1];
-
-          var runnerConfig = new TDL.ImplementationRunnerConfig()
-            .setHostname(HOSTNAME)
-            .setPort(PORT)
-            .setRequestQueueName(REQUEST_QUEUE_NAME)
-            .setResponseQueueName(RESPONSE_QUEUE_NAME);
-
-          world.runnerBuilder = new TDL.QueryBasedImplementationRunnerBuilder().setConfig(
-            runnerConfig
-          );
-
-          world.runner = world.runnerBuilder.create();
+          world.requestQueue = broker.addQueueAndPurge(REQUEST_QUEUE_NAME);
+          world.responseQueue = broker.addQueueAndPurge(RESPONSE_QUEUE_NAME);
         })
         .then(proceed(callback), orReportException(callback));
     }
   );
+
+  this.Given(/^a client that connects to the queues$/, function(callback) {
+    var world = this;
+
+    testBroker
+      .connect()
+      .then(function(queues = [world.requestQueue, world.responseQueue]) {
+        console.log("Saving queues: " + queues);
+
+        var runnerConfig = new TDL.ImplementationRunnerConfig()
+          .setHostname(HOSTNAME)
+          .setPort(PORT)
+          .setRequestQueueName(REQUEST_QUEUE_NAME)
+          .setResponseQueueName(RESPONSE_QUEUE_NAME);
+
+        world.runnerBuilder = new TDL.QueryBasedImplementationRunnerBuilder().setConfig(
+          runnerConfig
+        );
+
+        world.runner = world.runnerBuilder.create();
+      })
+      .then(proceed(callback), orReportException(callback));
+  });
 
   this.Given(/^the broker is not available$/, function(callback) {
     var world = this;
@@ -169,7 +172,7 @@ module.exports = function() {
     }
   }
 
-    var USER_IMPLEMENTATIONS = {
+  var USER_IMPLEMENTATIONS = {
     "add two numbers": function(x, y) {
       return x + y;
     },
