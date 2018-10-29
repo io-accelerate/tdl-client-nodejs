@@ -26,8 +26,15 @@ module.exports = function() {
         .connect()
         .then(function(broker) {
           world.broker = broker;
-          world.requestQueue = Promise.resolve(broker.addQueueAndPurge(REQUEST_QUEUE_NAME));
-          world.responseQueue = Promise.resolve(broker.addQueueAndPurge(RESPONSE_QUEUE_NAME));
+          return Promise.all([
+              broker.addQueueAndPurge(REQUEST_QUEUE_NAME),
+              broker.addQueueAndPurge(RESPONSE_QUEUE_NAME)
+          ]);
+        })
+        .then(function (queues) {
+            console.log("Saving queues: " + queues);
+            world.requestQueue = queues[0];
+            world.responseQueue = queues[1];
         })
         .then(proceed(callback), orReportException(callback));
     }
@@ -38,9 +45,7 @@ module.exports = function() {
 
     testBroker
       .connect()
-      .then(function(queues = [world.requestQueue, world.responseQueue]) {
-        console.log("Saving queues: " + queues);
-
+      .then(function() {
         var runnerConfig = new TDL.ImplementationRunnerConfig()
           .setHostname(HOSTNAME)
           .setPort(PORT)
@@ -398,7 +403,7 @@ function proceed(callback) {
 
 function orReportException(callback) {
   return function(err) {
-    console.log("Oops. Error: " + err);
+    console.log("Oops. Error");
     if (err.constructor.name === "AssertionError") {
       console.log("Assertion failed with: " + err.message);
       console.log("Expected: " + err.expected);
