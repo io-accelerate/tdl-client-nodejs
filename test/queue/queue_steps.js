@@ -403,7 +403,7 @@ function proceed(callback) {
 
 function orReportException(callback) {
   return function(err) {
-    console.log("Oops. Error");
+    console.log("Oops. Error: " + err);
     if (err.constructor.name === "AssertionError") {
       console.log("Assertion failed with: " + err.message);
       console.log("Expected: " + err.expected);
