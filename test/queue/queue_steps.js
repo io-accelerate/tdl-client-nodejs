@@ -26,8 +26,8 @@ module.exports = function() {
         .connect()
         .then(function(broker) {
           world.broker = broker;
-          world.requestQueue = broker.addQueueAndPurge(REQUEST_QUEUE_NAME);
-          world.responseQueue = broker.addQueueAndPurge(RESPONSE_QUEUE_NAME);
+          world.requestQueue = Promise.resolve(broker.addQueueAndPurge(REQUEST_QUEUE_NAME));
+          world.responseQueue = Promise.resolve(broker.addQueueAndPurge(RESPONSE_QUEUE_NAME));
         })
         .then(proceed(callback), orReportException(callback));
     }
@@ -398,7 +398,7 @@ function proceed(callback) {
 
 function orReportException(callback) {
   return function(err) {
-    console.log("Oops. Error.");
+    console.log("Oops. Error: " + err);
     if (err.constructor.name === "AssertionError") {
       console.log("Assertion failed with: " + err.message);
       console.log("Expected: " + err.expected);
