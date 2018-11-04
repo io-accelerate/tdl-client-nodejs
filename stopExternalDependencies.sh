@@ -4,29 +4,16 @@ set -e
 set -u
 set -o pipefail
 
-stopProcessAtPort() {
-    PORT=$1
-    PID=$(netstat -tulpn | grep :${PORT} | awk '{print $7}' | tr -d "/java" || true)
-    if [[ -z "${PID}" ]]; then
-        echo "~~~~~~~~~~ Process on port ${PORT} stopped ~~~~~~~~~"
-    else
-        kill -9 ${PID}
-        echo "~~~~~~~~~~ Process on port ${PORT} killed ~~~~~~~~~"
-    fi
+startWiremocks() {
+    echo "~~~~~~~~~~ Starting Wiremocks on ports 41375 and 8222 ~~~~~~~~~"
+    python wiremock/wiremock-wrapper.py start 41375
+	python wiremock/wiremock-wrapper.py start 8222
 }
 
-stopWiremocks() {
-    echo "~~~~~~~~~~ Stopping Wiremocks listening on ports 41375 and 8222 ~~~~~~~~~"
-    python wiremock/wiremock-wrapper.py stop || true
-
-    stopProcessAtPort 41375
-    stopProcessAtPort 8222
+startBroker() {
+    echo "~~~~~~~~~~ Starting Broker ~~~~~~~~~"
+    python broker/activemq-wrapper.py start
 }
 
-stopBroker() {
-    echo "~~~~~~~~~~ Stoping Broker ~~~~~~~~~"
-    python broker/activemq-wrapper.py stop || true
-}
-
-stopWiremocks
-stopBroker
+startWiremocks
+startBroker
