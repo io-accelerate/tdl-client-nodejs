@@ -1,9 +1,31 @@
 [![Node Version](http://img.shields.io/badge/Node-5.6.0-green.svg)](https://nodejs.org/dist/latest-v5.x/)
-[![npm](http://img.shields.io/npm/v/tdl-client.svg?maxAge=2592000)](https://www.npmjs.com/package/tdl-client)
+[![npm](http://img.shields.io/npm/v/tdl-client.svg?maxAge=2592000)](https://www.npmjs.com/package/tdl-client-nodejs)
 [![Codeship Status for julianghionoiu/tdl-client-nodejs](https://img.shields.io/codeship/f6d0ec40-2c31-0134-f32a-2a45120acafc.svg)](https://codeship.com/projects/163364)
 [![Coverage Status](https://coveralls.io/repos/github/julianghionoiu/tdl-client-nodejs/badge.svg?branch=master)](https://coveralls.io/github/julianghionoiu/tdl-client-nodejs?branch=master)
 
 # tdl-client-nodejs
+
+### Submodules
+
+Project contains submodules as mentioned in the `.gitmodules` file:
+
+- broker
+- tdl/client-spec (gets cloned into features)
+- wiremock 
+
+Use the below command to update the submodules of the project:
+
+```
+git submodule update --init
+```
+
+### Getting started
+
+Javascript client to connect to the central kata server.
+
+#### Manual 
+
+Stopping the above services would be the same, using the `stop` command instead of the `start` command.
 
 `npm install`
 
@@ -18,7 +40,22 @@ And the broker, with:
 python broker/activemq-wrapper.py start
 ```
 
-Run tests
+#### Automatic (via script)
+
+Start and stop the wiremocks and broker services with the below:
+ 
+```bash
+./startExternalDependencies.sh
+``` 
+
+```bash
+./stopExternalDependencies.sh
+``` 
+
+Then run the tests in RunAllAcceptanceTest.java via the CLI:
+
+**Run tests**
+
 ```
 npm test
 ```
@@ -27,6 +64,39 @@ npm test
 
 If you want to run the Spec file in your IDE you need to pass `-r ./test` to cucumber-js
 
+**Running Scenarios using cucumber**
+
+Run the below from the project root folder:
+
+```bash
+./node_modules/.bin/cucumber-js -r ./test  
+```
+
+**Running Scenarios using cucumber and istanbul**
+
+Run the below from the project root folder:
+
+```bash
+istanbul cover ./node_modules/.bin/cucumber-js -- -S -r ./test  
+```
+
+**Running specific Scenarios using cucumber**
+
+Run the below from the project root folder:
+
+```bash
+./node_modules/.bin/cucumber-js --name "[Name of the scenario in the .features file within quotes]" -r ./test  
+```
+
+**Running specific Scenarios using cucumber and istanbul**
+
+Run the below from the project root folder:
+
+```bash
+istanbul cover ./node_modules/.bin/cucumber-js -- --name "[Name of the scenario in the .features file within quotes]" -S -r ./test  
+```
+
+or via the IDE
 
 ## To release
 
