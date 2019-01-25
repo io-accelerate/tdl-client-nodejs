@@ -1,4 +1,3 @@
-exports.Client = require("./lib/queue/client");
 exports.ProcessingRules = require("./lib/queue/processing_rules");
 exports.AuditStream = require("./lib/audit/audit_stream");
 exports.ImplementationRunnerConfig = require("./lib/queue/implementation_runner_config.js");
