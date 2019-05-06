@@ -221,14 +221,26 @@ module.exports = function() {
     "throw exception": function() {
       throw new Error();
     },
-    "some logic": function(value) {
-      return value;
+    "some logic": function() {
+      return "_";
     },
     "increment number": function(x) {
       return x + 1;
     },
-    "echo the request": function(x) {
+    "replay the value": function(x) {
       return x;
+    },
+    "sum the elements of an array": function(x) {
+        return x.reduce(function(a,b){
+            return a + b
+        }, 0);
+    },
+    "generate array of integers": function(x, y) {
+        var int_array = [];
+        for (var i = x; i < y; i++) {
+            int_array.push(i);
+        }
+        return int_array;
     },
     "work for 600ms": function() {
       sleep(600);
