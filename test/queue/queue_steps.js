@@ -8,10 +8,10 @@ var TDL = require("../..");
 
 var testBroker = require("../test_broker");
 
-const HOSTNAME = "localhost";
-const PORT = 21613;
-const REQUEST_QUEUE_NAME = "some-user-req";
-const RESPONSE_QUEUE_NAME = "some-user-resp";
+var HOSTNAME = "localhost";
+var PORT = 21613;
+var REQUEST_QUEUE_NAME = "some-user-req";
+var RESPONSE_QUEUE_NAME = "some-user-resp";
 
 module.exports = function() {
   // ~~~~~ Setup
@@ -132,70 +132,23 @@ module.exports = function() {
     callback();
   });
 
-  this.Then(/^the request queue is "([^"]*)"$/, function(
-    expectedValue,
-    callback
-  ) {
-    var world = this;
-    world.requestQueue
-      .getName()
-      .then(function(name) {
-        assert.equal(
-          name,
-          expectedValue,
-          "Request queue has a different value."
-        );
-      })
-      .then(proceed(callback), orReportException(callback));
-  });
 
-  this.Then(/^the response queue is "([^"]*)"$/, function(
-    expectedValue,
-    callback
-  ) {
-    var world = this;
-    world.responseQueue
-      .getName()
-      .then(function(name) {
-        assert.equal(
-          name,
-          expectedValue,
-          "Response queue has a different value."
-        );
-      })
-      .then(proceed(callback), orReportException(callback));
-  });
-
-  this.Then(/^the client should consume one request$/, function(
-      expectedValue = 1,
-      callback
-  ) {
+  this.Then(/^the client should consume one request$/, function(callback) {
       var world = this;
       world.requestQueue
-          .getName()
-          .then(function(name) {
-              assert.equal(
-                  name,
-                  expectedValue,
-                  "Request queue has a different value."
-              );
+          .getSize()
+          .then(function(size) {
+              assert.equal(size, world.requestCount - 1, "Request queue size has a different value.");
           })
           .then(proceed(callback), orReportException(callback));
   });
 
-  this.Then(/^the client should publish one response$/, function(
-      expectedValue = 1,
-      callback
-  ) {
+  this.Then(/^the client should publish one response$/, function(callback) {
       var world = this;
       world.responseQueue
-          .getName()
-          .then(function(name) {
-              assert.equal(
-                  name,
-                  expectedValue,
-                  "Response queue has a different value."
-              );
+          .getSize()
+          .then(function(size) {
+              assert.equal(size, 1, "Response queue size has a different value.");
           })
           .then(proceed(callback), orReportException(callback));
   });
