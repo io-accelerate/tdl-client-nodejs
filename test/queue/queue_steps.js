@@ -65,7 +65,7 @@ module.exports = function() {
     var world = this;
 
     var runnerConfig = new TDL.ImplementationRunnerConfig()
-      .setHostname("111")
+      .setHostname("localhostx")
       .setPort(PORT)
       .setRequestQueueName("x")
       .setResponseQueueName("y");
