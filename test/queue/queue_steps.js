@@ -55,8 +55,6 @@ module.exports = function() {
         world.runnerBuilder = new TDL.QueryBasedImplementationRunnerBuilder().setConfig(
           runnerConfig
         );
-
-        world.runner = world.runnerBuilder.create();
       })
       .then(proceed(callback), orReportException(callback));
   });
@@ -65,7 +63,7 @@ module.exports = function() {
     var world = this;
 
     var runnerConfig = new TDL.ImplementationRunnerConfig()
-      .setHostname("localhostx")
+      .setHostname("111")
       .setPort(PORT)
       .setRequestQueueName("x")
       .setResponseQueueName("y");
@@ -123,7 +121,7 @@ module.exports = function() {
     callback
   ) {
     var world = this;
-    var actualTimeout = world.runner.getRequestTimeoutMillisecond();
+    var actualTimeout = world.runnerBuilder.create().getRequestTimeoutMillisecond();
     assert.equal(
       actualTimeout,
       expectedTimeout,
