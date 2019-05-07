@@ -116,16 +116,15 @@ module.exports = function() {
     sendAllMessages.then(proceed(callback), orReportException(callback));
   });
 
-  this.Then(/^the time to wait for requests is (\d+)ms$/, function(
+  this.Then(/^the time to wait for requests is at least (\d+)ms$/, function(
     expectedTimeout,
     callback
   ) {
     var world = this;
     var actualTimeout = world.runnerBuilder.create().getRequestTimeoutMillisecond();
-    assert.equal(
-      actualTimeout,
-      expectedTimeout,
-      "The client request timeout has a different value."
+    assert.isAtLeast(actualTimeout,
+        +expectedTimeout,
+      "The client request timeout should be alt least "+expectedTimeout
     );
     callback();
   });
