@@ -341,8 +341,14 @@ module.exports = function() {
     callback
   ) {
     var world = this;
-    assert.isBelow(world.processingTime, +threshold);
-    callback();
+    Promise.resolve(threshold)
+        .then(function(threshold) {
+            var feature_threshold = +threshold;
+            var cause_javascript_is_slow = 2000;
+            var actual_threshold = feature_threshold + cause_javascript_is_slow;
+            assert.isBelow(world.processingTime, +actual_threshold);
+        })
+        .then(proceed(callback), orReportException(callback));
   });
 };
 
