@@ -13,6 +13,9 @@ var PORT = 21613;
 var REQUEST_QUEUE_NAME = "some-user-req";
 var RESPONSE_QUEUE_NAME = "some-user-resp";
 
+var LONG_TIMEOUT = {timeout: 60 * 1000};
+
+
 module.exports = function() {
   // ~~~~~ Setup
   // TODO: how do we implement this in NodeJS, like we did in Java, see https://github.com/julianghionoiu/tdl-client-java/commit/4475fc3b01bb3f6fbc2b2d423848f5dcec489461#diff-0672afec8f176ab43f4d558fe4023e5dR54
@@ -75,7 +78,7 @@ module.exports = function() {
     callback();
   });
 
-  this.Given(/^I receive the following requests:$/, function(table, callback) {
+    this.Given(/^I receive the following requests:$/, function(table, callback) {
     var world = this;
     console.log("table: " + util.inspect(table.hashes()));
     world.requestCount = table.hashes().length;
@@ -91,7 +94,7 @@ module.exports = function() {
     sendAllMessages.then(proceed(callback), orReportException(callback));
   });
 
-  this.Given(/^I receive (\d+) identical requests like:$/, function(
+  this.Given(/^I receive (\d+) identical requests like:$/, LONG_TIMEOUT, function(
     repeatCount,
     table,
     callback
@@ -116,15 +119,15 @@ module.exports = function() {
     sendAllMessages.then(proceed(callback), orReportException(callback));
   });
 
-  this.Then(/^the time to wait for requests is at least (\d+)ms$/, function(
+  this.Then(/^the time to wait for requests is (\d+)ms$/, function(
     expectedTimeout,
     callback
   ) {
     var world = this;
     var actualTimeout = world.runnerBuilder.create().getRequestTimeoutMillisecond();
-    assert.isAtLeast(actualTimeout,
+    assert.equal(actualTimeout,
         +expectedTimeout,
-      "The client request timeout should be alt least "+expectedTimeout
+      "The client request timeout should be "+expectedTimeout
     );
     callback();
   });
@@ -206,7 +209,7 @@ module.exports = function() {
     }
   }
 
-  this.When(/^I go live with the following processing rules:$/, function(
+  this.When(/^I go live with the following processing rules:$/, LONG_TIMEOUT, function(
     table,
     callback
   ) {
@@ -225,7 +228,6 @@ module.exports = function() {
     startIntercept(world);
     var logThenCallback = function() {
       endIntercept(world);
-      callback();
     };
 
     var timestampBefore = new Date();
@@ -236,6 +238,7 @@ module.exports = function() {
         var timestampAfter = new Date();
         world.processingTime = timestampAfter - timestampBefore;
         console.log("Processing time: %dms", world.processingTime);
+        callback();
       });
   });
 
