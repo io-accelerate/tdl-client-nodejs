@@ -12,8 +12,7 @@
   },
   "dependencies": {
     "promise": "~8.3.0",
-    "stompit": "~1.0.0",
-    "unirest": "~0.6.0"
+    "stompit": "~1.0.0"
   },
   "devDependencies": {
     "@cucumber/cucumber": "~11.2.0",
