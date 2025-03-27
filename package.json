@@ -4,7 +4,7 @@
   "description": "A NodeJs client that allows users to get up to speed with the TDL system.",
   "main": "tdl-client.js",
   "scripts": {
-    "test": "./node_modules/.bin/cucumber-js -r ./test"
+    "test": "./node_modules/.bin/cucumber-js"
   },
   "repository": {
     "type": "git",
@@ -18,9 +18,10 @@
   },
   "devDependencies": {
     "chai": "~5.2.0",
-    "cucumber": "~6.0.7",
+    "@cucumber/cucumber": "~11.2.0",
     "intercept-stdout": "~0.1.2",
-    "rimraf": "~6.0.1"
+    "rimraf": "~6.0.1",
+    "pretty": "~2.0.0"
   },
   "engines": {
     "node": ">=22.14.0",

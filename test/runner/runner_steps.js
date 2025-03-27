@@ -1,212 +1,161 @@
 "use strict";
 
-var assert = require('chai').assert;
-var fs = require('fs');
-var path = require('path');
-var rimraf = require('rimraf');
+const assert = require('assert'); // Use Node.js built-in assert
+const fs = require('fs');
+const path = require('path');
+const rimraf = require('rimraf');
+const { Given, When, Then } = require('@cucumber/cucumber');
 
-var TDL = require('../..');
-var WiremockProcess = require('./wiremock_process');
-var TestActionProvider = require('./test_action_provider');
-var TestAuditStream = require('./test_audit_stream');
-var NoisyImplementationRunner = require('../queue/runners/noisy_implementation_runner');
-var QuietImplementationRunner = require('../queue/runners/quiet_implementation_runner');
+const TDL = require('../..');
+const WiremockProcess = require('./wiremock_process');
+const TestActionProvider = require('./test_action_provider');
+const TestAuditStream = require('./test_audit_stream');
+const NoisyImplementationRunner = require('../queue/runners/noisy_implementation_runner');
+const QuietImplementationRunner = require('../queue/runners/quiet_implementation_runner');
 
-var workingDirectory = './';
+const workingDirectory = './';
 
-module.exports = function () {
+Given(/^There is a challenge server running on "(.*)" port (.*)$/, function (hostname, port) {
+    this.challengeHostname = hostname;
+    this.challengePort = port;
 
-    this.Given(/^There is a challenge server running on "(.*)" port (.*)$/, function (hostname, port, callback) {
-        var world = this;
+    this.challengeServerStub = new WiremockProcess(hostname, port);
+    return this.challengeServerStub.reset();
+});
 
-        world.challengeHostname = hostname;
-        world.challengePort = port;
+Given(/^There is a recording server running on "(.*)" port (.*)$/, function (hostname, port) {
+    this.recordingServerStub = new WiremockProcess(hostname, port);
+    return this.recordingServerStub.reset();
+});
 
-        world.challengeServerStub = new WiremockProcess(hostname, port);
-        world.challengeServerStub
-            .reset()
-            .then(callback);
-    });
+Given(/^the challenge server exposes the following endpoints$/, function (table) {
+    const world = this;
 
-    this.Given(/^There is a recording server running on "(.*)" port (.*)$/, function (hostname, port, callback) {
-        var world = this;
+    return table.hashes().reduce(function (prev, serverConfig) {
+        return prev.then(function () {
+            return world.challengeServerStub.createNewMapping(serverConfig);
+        });
+    }, Promise.resolve());
+});
 
-        world.recordingServerStub = new WiremockProcess(hostname, port);
-        world.recordingServerStub
-            .reset()
-            .then(callback);
-    });
+Given(/^the recording server exposes the following endpoints$/, function (table) {
+    const world = this;
 
-    this.Given(/^the challenge server exposes the following endpoints$/, function (table, callback) {
-        var world = this;
+    return table.hashes().reduce(function (prev, serverConfig) {
+        return prev.then(function () {
+            return world.recordingServerStub.createNewMapping(serverConfig);
+        });
+    }, Promise.resolve());
+});
 
-        table.hashes()
-            .reduce(function (prev, serverConfig) {
-                return prev.then(function () {
-                    return world.challengeServerStub.createNewMapping(serverConfig);
-                });
-            }, Promise.resolve())
-            .then(callback);
-    });
+Given(/^journeyId is "(.*)"$/, function (journeyId) {
+    this.journeyId = journeyId;
+});
 
-    this.Given(/^the recording server exposes the following endpoints$/, function (table, callback) {
-        var world = this;
+Given(/^the action input comes from a provider returning "(.*)"$/, function (s) {
+    TestActionProvider.set(s);
+});
 
-        table.hashes()
-            .reduce(function (prev, serverConfig) {
-                return prev.then(function () {
-                    return world.recordingServerStub.createNewMapping(serverConfig);
-                });
-            }, Promise.resolve())
-            .then(callback);
-    });
-
-    this.Given(/^journeyId is "(.*)"$/, function (journeyId, callback) {
-        var world = this;
-
-        world.journeyId = journeyId;
-
-        callback();
-    });
-
-    this.Given(/^the action input comes from a provider returning "(.*)"$/, function (s, callback) {
-        TestActionProvider.set(s);
-        callback();
-    });
-
-    this.Given(/^the challenges folder is empty$/, function (callback) {
-        var challengesPath = path.join(workingDirectory, 'challenges');
-        rimraf(challengesPath, callback);
-    });
-
-    this.Given(/^there is an implementation runner that prints "(.*)"$/, function (s, callback) {
-        var world = this;
-
-        world.implementationRunnerMessage = s;
-        world.implementationRunner = new NoisyImplementationRunner(s);
-
-        callback();
-    });
-
-    this.Given(/^recording server is returning error$/, function (callback) {
-        var world = this;
-
-        world.recordingServerStub
-            .reset()
-            .then(callback);
-    });
-
-    this.Given(/^the challenge server returns (\d+), response body "(.*)" for all requests$/, function (returnCode, body, callback) {
-        var world = this;
-
-        world.challengeServerStub
-            .createNewMapping({
-                endpointMatches: '^(.*)',
-                status: returnCode,
-                verb: 'ANY',
-                responseBody: body
-            })
-            .then(callback);
-    });
-
-    this.Given(/^the challenge server returns (\d+) for all requests$/, function (returnCode, callback) {
-        var world = this;
-
-        world.challengeServerStub
-            .createNewMapping({
-                endpointMatches: '^(.*)',
-                status: returnCode,
-                verb: 'ANY'
-            })
-            .then(callback);
-    });
-
-    this.When(/^user starts client$/, function (callback) {
-        var world = this;
-
-        world.auditStream = new TestAuditStream();
-
-        var config = TDL.ChallengeSessionConfig
-            .forJourneyId(world.journeyId)
-            .withServerHostname(world.challengeHostname)
-            .withPort(world.challengePort)
-            .withColours(true)
-            .withAuditStream(world.auditStream)
-            .withRecordingSystemShouldBeOn(true)
-            .withWorkingDirectory(workingDirectory);
-
-        var runner = world.implementationRunner || new QuietImplementationRunner();
-        runner.setAuditStream(world.auditStream);
-
-        TDL.ChallengeSession
-            .forRunner(runner)
-            .withConfig(config)
-            .withActionProvider(TestActionProvider)
-            .start()
-            .then(callback);
-    });
-
-    this.Then(/^the server interaction should look like:$/, function (expectedOutput, callback) {
-        var world = this;
-
-        var total = world.auditStream.getLog();
-        assert.isTrue(total.indexOf(expectedOutput) !== -1, 'Expected string is not contained in output');
-        callback();
-    });
-
-    this.Then(/^the file "(.*)" should contain$/, function (file, text, callback) {
-        var fileFullPath = path.join(workingDirectory, file);
-
-        var fileContent = fs.readFileSync(fileFullPath, 'utf8');
-        text = text.replace(/\n$/, '');
-
-        assert.equal(fileContent, text, 'Contents of the file is not what is expected');
-
-        callback();
-    });
-
-    this.Then(/^the recording system should be notified with "(.*)"$/, function (expectedOutput, callback) {
-        var world = this;
-
-        world.recordingServerStub.verifyEndpointWasHit('/notify', 'POST', expectedOutput).then(function (wasHit) {
-            assert.isTrue(wasHit);
-            callback();
+Given(/^the challenges folder is empty$/, function () {
+    const challengesPath = path.join(workingDirectory, 'challenges');
+    return new Promise((resolve, reject) => {
+        rimraf(challengesPath, (err) => {
+            if (err) reject(err);
+            else resolve();
         });
     });
+});
 
-    this.Then(/^the recording system should have received a stop signal$/, function (callback) {
-        var world = this;
+Given(/^there is an implementation runner that prints "(.*)"$/, function (s) {
+    this.implementationRunnerMessage = s;
+    this.implementationRunner = new NoisyImplementationRunner(s);
+});
 
-        world.recordingServerStub.verifyEndpointWasHit('/stop', 'POST', "").then(function (wasHit) {
-            assert.isTrue(wasHit);
-            callback();
-        });
+Given(/^recording server is returning error$/, function () {
+    return this.recordingServerStub.reset();
+});
+
+Given(/^the challenge server returns (\d+), response body "(.*)" for all requests$/, function (returnCode, body) {
+    return this.challengeServerStub.createNewMapping({
+        endpointMatches: '^(.*)',
+        status: returnCode,
+        verb: 'ANY',
+        responseBody: body
     });
+});
 
-    this.Then(/^the implementation runner should be run with the provided implementations$/, function (callback) {
-        var world = this;
-
-        var total = world.auditStream.getLog();
-        assert.isTrue(total.indexOf(world.implementationRunnerMessage) !== -1);
-        callback();
+Given(/^the challenge server returns (\d+) for all requests$/, function (returnCode) {
+    return this.challengeServerStub.createNewMapping({
+        endpointMatches: '^(.*)',
+        status: returnCode,
+        verb: 'ANY'
     });
+});
 
-    this.Then(/^the server interaction should contain the following lines:$/, function (expectedOutput, callback) {
-        var world = this;
+When(/^user starts client$/, function () {
+    const world = this;
 
-        var total = world.auditStream.getLog();
-        var lines = expectedOutput.split('\n');
-        lines.forEach(function (line) {
-            assert.isTrue(total.indexOf(line) !== -1, 'Expected string is not contained in output');
-        });
-        callback();
+    world.auditStream = new TestAuditStream();
+
+    const config = TDL.ChallengeSessionConfig
+        .forJourneyId(world.journeyId)
+        .withServerHostname(world.challengeHostname)
+        .withPort(world.challengePort)
+        .withColours(true)
+        .withAuditStream(world.auditStream)
+        .withRecordingSystemShouldBeOn(true)
+        .withWorkingDirectory(workingDirectory);
+
+    const runner = world.implementationRunner || new QuietImplementationRunner();
+    runner.setAuditStream(world.auditStream);
+
+    return TDL.ChallengeSession
+        .forRunner(runner)
+        .withConfig(config)
+        .withActionProvider(TestActionProvider)
+        .start();
+});
+
+Then(/^the server interaction should look like:$/, function (expectedOutput) {
+    const total = this.auditStream.getLog();
+    assert.ok(total.includes(expectedOutput), 'Expected string is not contained in output');
+});
+
+Then(/^the file "(.*)" should contain$/, function (file, text) {
+    const fileFullPath = path.join(workingDirectory, file);
+
+    const fileContent = fs.readFileSync(fileFullPath, 'utf8');
+    text = text.replace(/\n$/, '');
+
+    assert.strictEqual(fileContent, text, 'Contents of the file is not what is expected');
+});
+
+Then(/^the recording system should be notified with "(.*)"$/, function (expectedOutput) {
+    return this.recordingServerStub.verifyEndpointWasHit('/notify', 'POST', expectedOutput).then(function (wasHit) {
+        assert.ok(wasHit);
     });
+});
 
-    this.Then(/^the client should not ask the user for input$/, function (callback) {
-        var world = this;
-
-        var total = world.auditStream.getLog();
-        assert.isTrue(total.indexOf('Selected action is:') === -1);
-        callback();
+Then(/^the recording system should have received a stop signal$/, function () {
+    return this.recordingServerStub.verifyEndpointWasHit('/stop', 'POST', "").then(function (wasHit) {
+        assert.ok(wasHit);
     });
-};
+});
+
+Then(/^the implementation runner should be run with the provided implementations$/, function () {
+    const total = this.auditStream.getLog();
+    assert.ok(total.includes(this.implementationRunnerMessage));
+});
+
+Then(/^the server interaction should contain the following lines:$/, function (expectedOutput) {
+    const total = this.auditStream.getLog();
+    const lines = expectedOutput.split('\n');
+    lines.forEach(function (line) {
+        assert.ok(total.includes(line), 'Expected string is not contained in output');
+    });
+});
+
+Then(/^the client should not ask the user for input$/, function () {
+    const total = this.auditStream.getLog();
+    assert.ok(!total.includes('Selected action is:'));
+});
