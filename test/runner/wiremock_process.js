@@ -1,9 +1,9 @@
 'use strict';
 
-var unirest = require('unirest');
+var http = require('http');
 
 var WiremockProcess = function (hostname, port) {
-    this._serverUrl = 'http://'+hostname+':'+port
+    this._serverUrl = 'http://' + hostname + ':' + port;
 };
 
 WiremockProcess.prototype.reset = function () {
@@ -55,7 +55,7 @@ WiremockProcess.prototype.verifyEndpointWasHit = function(endpoint, methodType, 
     return new Promise(function(resolve) {
         self._countRequestsWithEndpoint(endpoint, methodType, body)
             .then(function(response) {
-                resolve(response.count === 1)
+                resolve(response.count === 1);
             });
     });
 };
@@ -80,14 +80,45 @@ WiremockProcess.prototype._countRequestsWithEndpoint = function(endpoint, verb, 
 WiremockProcess.prototype._postJson = function (method, data) {
     var self = this;
 
-    return new Promise(function (resolve) {
-        unirest
-            .post(self._serverUrl+'/'+method)
-            .headers({'Content-Type': 'application/json'})
-            .send(data || {})
-            .end(function (response) {
-                resolve(response.body);
+    return new Promise(function (resolve, reject) {
+        var postData = JSON.stringify(data || {});
+
+        var url = new URL(self._serverUrl + '/' + method);
+        var options = {
+            hostname: url.hostname,
+            port: url.port,
+            path: url.pathname,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(postData)
+            }
+        };
+
+        var req = http.request(options, (res) => {
+            let rawData = '';
+            res.setEncoding('utf8');
+            res.on('data', (chunk) => { rawData += chunk; });
+            res.on('end', () => {
+                if (rawData) {
+                    try {
+                        const parsedData = JSON.parse(rawData);
+                        resolve(parsedData);
+                    } catch (e) {
+                        reject(new Error('Failed to parse JSON: ' + e.message));
+                    }
+                } else {
+                    resolve({}); // Resolve with an empty object if no data
+                }
             });
+        });
+
+        req.on('error', (e) => {
+            reject(e);
+        });
+
+        req.write(postData);
+        req.end();
     });
 };
 
