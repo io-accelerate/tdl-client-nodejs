@@ -8,10 +8,7 @@
 ### Submodules
 
 Project contains submodules as mentioned in the `.gitmodules` file:
-
-- broker
-- tdl/client-spec (gets cloned into features)
-- wiremock 
+- tdl-client-spe (gets cloned into features)
 
 Use the below command to update the submodules of the project:
 
@@ -26,6 +23,9 @@ Javascript client to connect to the central kata server.
 #### Manual 
 
 Stopping the above services would be the same, using the `stop` command instead of the `start` command.
+
+
+
 
 `npm install`
 
