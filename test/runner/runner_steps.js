@@ -3,7 +3,6 @@
 const assert = require('assert'); // Use Node.js built-in assert
 const fs = require('fs');
 const path = require('path');
-const rimraf = require('rimraf');
 const { Given, When, Then } = require('@cucumber/cucumber');
 
 const TDL = require('../..');
@@ -59,10 +58,10 @@ Given(/^the action input comes from a provider returning "(.*)"$/, function (s) 
 Given(/^the challenges folder is empty$/, function () {
     const challengesPath = path.join(workingDirectory, 'challenges');
     return new Promise((resolve, reject) => {
-        rimraf(challengesPath, (err) => {
+        fs.rm(challengesPath, { recursive: true, force: true }, (err) => {
             if (err) reject(err);
             else resolve();
-        });
+        })
     });
 });
 

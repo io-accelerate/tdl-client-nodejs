@@ -46,7 +46,7 @@ WiremockProcess.prototype.createNewMapping = function (serverConfig) {
         data.response.statusMessage = serverConfig.statusMessage;
     }
 
-    return self._postJson('__admin/mappings/new', data);
+    return self._postJson('__admin/mappings', data);
 };
 
 WiremockProcess.prototype.verifyEndpointWasHit = function(endpoint, methodType, body) {

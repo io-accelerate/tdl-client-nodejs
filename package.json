@@ -11,16 +11,13 @@
     "url": "https://github.com/io-accelerate/tdl-client-nodejs"
   },
   "dependencies": {
-    "chai": "^5.2.0",
     "promise": "~8.3.0",
     "stompit": "~1.0.0",
     "unirest": "~0.6.0"
   },
   "devDependencies": {
-    "chai": "~5.2.0",
     "@cucumber/cucumber": "~11.2.0",
     "intercept-stdout": "~0.1.2",
-    "rimraf": "~6.0.1",
     "pretty": "~2.0.0"
   },
   "engines": {
