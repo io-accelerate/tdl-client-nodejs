@@ -73,41 +73,16 @@ docker stop challenge-server
 npm test
 ```
 
-If you want to run the Spec file in your IDE you need to pass `-r ./test` to cucumber-js
-
-**Running Scenarios using cucumber**
-
-Run the below from the project root folder:
-
-```bash
-./node_modules/.bin/cucumber-js -r ./test  
+Running all the tests
+```shell
+./node_modules/.bin/cucumber-js
 ```
 
-**Running Scenarios using cucumber and istanbul**
-
-Run the below from the project root folder:
-
+Running specific scenarios
 ```bash
-istanbul cover ./node_modules/.bin/cucumber-js -- -S -r ./test  
+./node_modules/.bin/cucumber-js --name "[Name of the scenario in the .features file within quotes]"  
 ```
 
-**Running specific Scenarios using cucumber**
-
-Run the below from the project root folder:
-
-```bash
-./node_modules/.bin/cucumber-js --name "[Name of the scenario in the .features file within quotes]" -r ./test  
-```
-
-**Running specific Scenarios using cucumber and istanbul**
-
-Run the below from the project root folder:
-
-```bash
-istanbul cover ./node_modules/.bin/cucumber-js -- --name "[Name of the scenario in the .features file within quotes]" -S -r ./test  
-```
-
-or via the IDE
 
 ## To release
 

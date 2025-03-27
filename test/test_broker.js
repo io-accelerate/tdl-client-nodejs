@@ -5,7 +5,7 @@ var RemoteJmxBroker = require('./utils/jmx/broker/remote_jmx_broker.js');
 function TestBroker() {
     this._hostname = 'localhost';
     this._port = 28161;
-    this._brokerName = 'TEST.BROKER';
+    this._brokerName = 'localhost';
 }
 
 TestBroker.prototype.connect = function () {

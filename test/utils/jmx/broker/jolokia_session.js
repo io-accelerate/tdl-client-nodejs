@@ -26,23 +26,27 @@ var JolokiaSession = function (host, adminPort) {
 };
 
 JolokiaSession.connect = function (host, admin_port, callback) {
-    console.log("Connecting to " + host + ":" +admin_port);
     var req = http.request({
         method: 'GET',
         host: host,
         port: admin_port,
-        path: '/api/jolokia/version'
-    }, onSuccessfulResponse(function (body) {
-        console.log("Connected");
-        var jolokia_version = JSON.parse(body).value.agent;
-        var expected_jolokia_version = '1.2.2';
-
-        if (jolokia_version !== expected_jolokia_version) {
-            throw "Failed to retrieve the right Jolokia version. Expected: "+expected_jolokia_version+" got "+jolokia_version;
+        path: "/api/jolokia/version",
+        headers: {
+            'Origin': 'http://localhost'
+        }
+    }, function (res) {
+        if (res.statusCode !== 200) {
+            throw new Error(`Failed to connect to Jolokia. Status code: ${res.statusCode}`);
         }
 
-        callback(new JolokiaSession(host, admin_port))
-    }));
+        var body = '';
+        res.on('data', function (d) {
+            body += d;
+        });
+        res.on('end', function () {
+            callback(new JolokiaSession(host,admin_port));
+        });
+    });
 
     req.end();
 };
@@ -54,11 +58,24 @@ JolokiaSession.prototype.request = function (jolokiaPayload, callback) {
         method: 'POST',
         host: this.host,
         port: this.adminPort,
-        path: '/api/jolokia'
-    }, onSuccessfulResponse(function (body) {
-        var responseValue = JSON.parse(body).value;
-        callback(responseValue)
-    }));
+        path: '/api/jolokia',
+        headers: {
+            'Origin': 'http://localhost'
+        }
+    }, function (res) {
+        var body = '';
+        res.on('data', function (d) {
+            body += d;
+        });
+        res.on('end', function () {
+            if (res.statusCode !== 200) {
+                var msg = `Failed Jolokia call: ${res.statusCode} ${body}`;
+                throw new Error(msg);
+            }
+            var jolokiaResponse = JSON.parse(body);
+            callback(jolokiaResponse.value);
+        });
+    });
 
     req.write(jsonPayload);
     req.end();
