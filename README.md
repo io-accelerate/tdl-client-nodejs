@@ -1,7 +1,5 @@
-[![Node Version](http://img.shields.io/badge/Node-5.6.0-green.svg)](https://nodejs.org/dist/latest-v5.x/)
+[![Node Version](http://img.shields.io/badge/Node-22.14.0-green.svg)](https://nodejs.org/dist/latest-v22.x/)
 [![npm](http://img.shields.io/npm/v/tdl-client.svg?maxAge=2592000)](https://www.npmjs.com/package/tdl-client-nodejs)
-[![Codeship Status for julianghionoiu/tdl-client-nodejs](https://img.shields.io/codeship/f6d0ec40-2c31-0134-f32a-2a45120acafc.svg)](https://codeship.com/projects/163364)
-[![Coverage Status](https://coveralls.io/repos/github/julianghionoiu/tdl-client-nodejs/badge.svg?branch=master)](https://coveralls.io/github/julianghionoiu/tdl-client-nodejs?branch=master)
 
 # tdl-client-nodejs
 
@@ -20,9 +18,15 @@ git submodule update --init
 
 Install the required Node version
 ```shell
-nvm install 8.17.0
+nvm install 22.14.0
+
 node --version
+v22.14.0
+
+npm --version
+11.2.0
 ```
+
 Install the required dependencies
 ```shell
 npm install
@@ -67,10 +71,6 @@ docker stop challenge-server
 
 ```
 npm test
-```
-
-```
-npm run example
 ```
 
 If you want to run the Spec file in your IDE you need to pass `-r ./test` to cucumber-js
