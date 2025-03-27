@@ -21,12 +21,12 @@ RemoteJmxBroker.prototype.addQueue = function (queueName) {
     return new Promise(function (fulfill) {
         var operation = {
             type: 'exec',
-            mbean: "org.apache.activemq:type=Broker,brokerName="+self.brokerName,
+            mbean: "org.apache.activemq:type=Broker,brokerName=" + self.brokerName,
             operation: 'addQueue',
             arguments: [queueName]
         };
         console.log("Adding queue: " + queueName);
-        self.jolokiaSession.request(operation, function() {
+        self.jolokiaSession.request(operation, function () {
             fulfill(new RemoteJmxQueue(self.jolokiaSession, self.brokerName, queueName));
         })
     });

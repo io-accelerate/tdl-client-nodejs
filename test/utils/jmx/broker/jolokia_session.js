@@ -5,7 +5,7 @@ var http = require('http');
 var onSuccessfulResponse = function (callback) {
     return function (res) {
         if (res.statusCode !== 200) {
-            throw "Request to failed with status: " + res.statusCode + ", message = "+res.statusMessage
+            throw "Request to failed with status: " + res.statusCode + ", message = " + res.statusMessage
         }
 
         var body = '';
@@ -44,7 +44,7 @@ JolokiaSession.connect = function (host, admin_port, callback) {
             body += d;
         });
         res.on('end', function () {
-            callback(new JolokiaSession(host,admin_port));
+            callback(new JolokiaSession(host, admin_port));
         });
     });
 

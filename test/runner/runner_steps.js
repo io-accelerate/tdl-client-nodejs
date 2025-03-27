@@ -3,7 +3,7 @@
 const assert = require('assert'); // Use Node.js built-in assert
 const fs = require('fs');
 const path = require('path');
-const { Given, When, Then } = require('@cucumber/cucumber');
+const {Given, When, Then} = require('@cucumber/cucumber');
 
 const TDL = require('../..');
 const WiremockProcess = require('./wiremock_process');
@@ -58,7 +58,7 @@ Given(/^the action input comes from a provider returning "(.*)"$/, function (s) 
 Given(/^the challenges folder is empty$/, function () {
     const challengesPath = path.join(workingDirectory, 'challenges');
     return new Promise((resolve, reject) => {
-        fs.rm(challengesPath, { recursive: true, force: true }, (err) => {
+        fs.rm(challengesPath, {recursive: true, force: true}, (err) => {
             if (err) reject(err);
             else resolve();
         })

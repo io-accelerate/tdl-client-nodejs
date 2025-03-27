@@ -2,14 +2,15 @@
 
 //Useful for debugging
 var util = require('util');
+
 function inspect(result) {
     return util.inspect(result, {showHidden: false, depth: null});
 }
 
 var JolokiaSession = require('./jolokia_session.js');
 
-var inspectSession = function(callback) {
-    return function(jolokiaSession) {
+var inspectSession = function (callback) {
+    return function (jolokiaSession) {
         inspect(jolokiaSession);
         console.log("jolokiaSession = ", jolokiaSession);
         typeof callback === 'function' && callback(jolokiaSession);

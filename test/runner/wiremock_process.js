@@ -49,18 +49,18 @@ WiremockProcess.prototype.createNewMapping = function (serverConfig) {
     return self._postJson('__admin/mappings', data);
 };
 
-WiremockProcess.prototype.verifyEndpointWasHit = function(endpoint, methodType, body) {
+WiremockProcess.prototype.verifyEndpointWasHit = function (endpoint, methodType, body) {
     var self = this;
-    
-    return new Promise(function(resolve) {
+
+    return new Promise(function (resolve) {
         self._countRequestsWithEndpoint(endpoint, methodType, body)
-            .then(function(response) {
+            .then(function (response) {
                 resolve(response.count === 1);
             });
     });
 };
 
-WiremockProcess.prototype._countRequestsWithEndpoint = function(endpoint, verb, body) {
+WiremockProcess.prototype._countRequestsWithEndpoint = function (endpoint, verb, body) {
     var self = this;
 
     var data = {
@@ -98,7 +98,9 @@ WiremockProcess.prototype._postJson = function (method, data) {
         var req = http.request(options, (res) => {
             let rawData = '';
             res.setEncoding('utf8');
-            res.on('data', (chunk) => { rawData += chunk; });
+            res.on('data', (chunk) => {
+                rawData += chunk;
+            });
             res.on('end', () => {
                 if (rawData) {
                     try {
