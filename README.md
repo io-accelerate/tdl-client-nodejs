@@ -18,49 +18,60 @@ git submodule update --init
 
 ### Getting started
 
-Javascript client to connect to the central kata server.
-
-#### Manual 
-
-Stopping the above services would be the same, using the `stop` command instead of the `start` command.
-
-
-
-
-`npm install`
-
-To run the acceptance tests, start the WireMock servers:
+Install the required Node version
+```shell
+nvm install 8.17.0
+node --version
 ```
-python wiremock/wiremock-wrapper.py start 41375
-python wiremock/wiremock-wrapper.py start 8222
+Install the required dependencies
+```shell
+npm install
 ```
 
-And the broker, with:
+# Testing
+
+All test require the ActiveMQ broker and Wiremock to be started.
+
+Start ActiveMQ
+```shell
+export ACTIVEMQ_CONTAINER=apache/activemq-classic:6.1.0
+docker run -d -it --rm -p 28161:8161 -p 21613:61613 -p 21616:61616 --name activemq ${ACTIVEMQ_CONTAINER}
 ```
-python broker/activemq-wrapper.py start
+
+The ActiveMQ web UI can be accessed at:
+http://localhost:28161/admin/
+use admin/admin to login
+
+Start two Wiremock servers
+```shell
+export WIREMOCK_CONTAINER=wiremock/wiremock:3.7.0
+docker run -d -it --rm -p 8222:8080 --name challenge-server ${WIREMOCK_CONTAINER}
+docker run -d -it --rm -p 41375:8080 --name recording-server ${WIREMOCK_CONTAINER}
 ```
 
-#### Automatic (via script)
+The Wiremock admin UI can be found at:
+http://localhost:8222/__admin/
+and docs at
+http://localhost:8222/__admin/docs
 
-Start and stop the wiremocks and broker services with the below:
- 
-```bash
-./startExternalDependencies.sh
-``` 
+# Cleanup
 
-```bash
-./stopExternalDependencies.sh
-``` 
+Stop dependencies
+```
+docker stop activemq
+docker stop recording-server
+docker stop challenge-server
+```
 
-Then run the tests in RunAllAcceptanceTest.java via the CLI:
-
-**Run tests**
+# Tests
 
 ```
 npm test
 ```
 
-`npm run example`
+```
+npm run example
+```
 
 If you want to run the Spec file in your IDE you need to pass `-r ./test` to cucumber-js
 
