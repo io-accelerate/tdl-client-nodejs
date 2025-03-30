@@ -203,7 +203,7 @@ const USER_IMPLEMENTATIONS = {
         return "OK";
     },
     "concatenate fields as string": function (obj) {
-        return obj["field1"] + obj["field2"];
+        return obj.field1 + obj.field2;
     },
     "build an object with two fields": function (field1, field2) {
         return { "field1": field1, "field2": field2 };
