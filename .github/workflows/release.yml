@@ -29,11 +29,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # ~~~~~~~~~~~~~ Build project (optional) ~~~~~~~~~~~~~
-      # Adjust this step depending on your project's build process
-      - name: Build project
-        run: npm run build
-
       # ~~~~~~~~~~~~~ Package asset (optional) ~~~~~~~~~~~~~
       # Adjust this step to package whatever release artifact you want
       - name: Prepare release asset
