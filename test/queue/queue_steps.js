@@ -167,6 +167,13 @@ function sleep(milliseconds) {
     }
 }
 
+class TestItem {
+    constructor({ field1, field2 }) {
+        this.field1 = field1;
+        this.field2 = field2;
+    }
+}
+
 const USER_IMPLEMENTATIONS = {
     "add two numbers": function (x, y) {
         return x + y;
@@ -203,7 +210,8 @@ const USER_IMPLEMENTATIONS = {
         return "OK";
     },
     "concatenate fields as string": function (obj) {
-        return obj.field1 + obj.field2;
+        const item = new TestItem(obj);
+        return item.field1 + item.field2;
     },
     "build an object with two fields": function (field1, field2) {
         return { "field1": field1, "field2": field2 };
