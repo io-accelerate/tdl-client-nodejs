@@ -34,11 +34,12 @@ jobs:
       - name: Prepare release asset
         run: |
           mkdir -p pkg
-          zip -r pkg/tdl-client-node.zip dist/
+          npm pack
+          mv *.tgz pkg/tdl-client-node.tgz
 
       # ~~~~~~~~~~~~~ Create GitHub Release ~~~~~~~~~~~~~
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: pkg/tdl-client-node.zip
+          files: pkg/tdl-client-node.tgz

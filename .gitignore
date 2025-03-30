@@ -4,3 +4,4 @@ coverage
 node_modules
 challenges
 .DS_Store
+pkg
