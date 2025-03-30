@@ -103,7 +103,7 @@ git push
 ```
 
 Wait for the Github build to finish, then go to:
-https://rubygems.org/gems/tdl-client-ruby
+https://www.npmjs.com/package/tdl-client-nodejs
 
 
 ## To manually release to NVM
