@@ -1,0 +1,45 @@
+name: Node.js Test
+
+on: [push]
+
+jobs:
+  build-and-test:
+
+    runs-on: ubuntu-latest
+
+    services:
+      activemq:
+        image: apache/activemq-classic:6.1.0
+        ports:
+          - 28161:8161
+          - 21613:61613
+      challenge-server:
+        image: wiremock/wiremock:3.7.0
+        ports:
+          - 8222:8080
+      recording-server:
+        image: wiremock/wiremock:3.7.0
+        ports:
+          - 41375:8080
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      # ~~~~~~~~~~~~~ Node.js setup ~~~~~~~~~~~~~
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22' # Adjust to your Node.js version
+          cache: 'npm'
+
+      - name: Display Node.js version
+        run: node -v
+
+      - name: Install dependencies
+        run: npm install
+
+      # ~~~~~~~~~~~~~ Test ~~~~~~~~~~~~~
+      - name: Run tests
+        run: npm test
