@@ -16,31 +16,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ~~~~~~~~~~~~~ Ruby setup ~~~~~~~~~~~~~
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      # ~~~~~~~~~~~~~ Node.js setup ~~~~~~~~~~~~~
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          ruby-version: '3.4' # adjust as needed
-          bundler-cache: true
+          node-version: '22' # Adjust to your preferred Node.js version
+          cache: 'npm'
 
-      - name: Display Ruby version
-        run: ruby -v
+      - name: Display Node.js version
+        run: node -v
 
       - name: Install dependencies
-        run: bundle install
+        run: npm install
 
-      # ~~~~~~~~~~~~~ Build the gem ~~~~~~~~~~~~~
-      - name: Build gem
-        run: gem build tdl-client-ruby.gemspec
+      # ~~~~~~~~~~~~~ Build project (optional) ~~~~~~~~~~~~~
+      # Adjust this step depending on your project's build process
+      - name: Build project
+        run: npm run build
 
-      - name: Rename gem for consistency
+      # ~~~~~~~~~~~~~ Package asset (optional) ~~~~~~~~~~~~~
+      # Adjust this step to package whatever release artifact you want
+      - name: Prepare release asset
         run: |
           mkdir -p pkg
-          mv *.gem pkg/tdl-client-ruby.gem
+          zip -r pkg/tdl-client-node.zip dist/
 
       # ~~~~~~~~~~~~~ Create GitHub Release ~~~~~~~~~~~~~
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: pkg/tdl-client-ruby.gem
+          files: pkg/tdl-client-node.zip

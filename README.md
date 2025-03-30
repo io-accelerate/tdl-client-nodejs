@@ -83,20 +83,45 @@ Running specific scenarios
 ./node_modules/.bin/cucumber-js --name "[Name of the scenario in the .features file within quotes]"  
 ```
 
+# To release
+Set version manually in `package.json`:
+```
+  "version": "0.29.1",
+```
 
-## To release
+Commit the changes
+```
+export RELEASE_TAG="v$(cat package.json  | grep version | cut -d "\"" -f4)"
+echo ${RELEASE_TAG}
 
-`npm login`
+git add --all
+git commit -m "Releasing version ${RELEASE_TAG}"
 
-`npm config ls`
+git tag -a "${RELEASE_TAG}" -m "${RELEASE_TAG}"
+git push --tags
+git push
+```
 
-For new version of Spec
-`npm version minor`
+Wait for the Github build to finish, then go to:
+https://rubygems.org/gems/tdl-client-ruby
 
-For patches without changing the Spec
-`npm version patch`
 
-`npm publish`
+## To manually release to NVM
+
+Log into NPM
+```shell
+npm login
+```
+
+List the current config
+```shell
+npm config ls
+```
+
+Publish to NPM
+```shell
+npm publish
+```
 
 Then go to https://www.npmjs.com/~
 
