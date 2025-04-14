@@ -216,6 +216,9 @@ const USER_IMPLEMENTATIONS = {
     "build an object with two fields": function (field1, field2) {
         return { "field1": field1, "field2": field2 };
     },
+    "retrieve a value from a map": function (param_as_map)  {
+        return param_as_map["key1"];
+    },
 };
 
 function asImplementation(call) {
