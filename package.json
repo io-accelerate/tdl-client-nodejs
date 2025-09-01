@@ -15,7 +15,7 @@
     "stompit": "~1.0.0"
   },
   "devDependencies": {
-    "@cucumber/cucumber": "~12.1.0",
+    "@cucumber/cucumber": "~12.2.0",
     "intercept-stdout": "~0.1.2",
     "pretty": "~2.0.0"
   },
