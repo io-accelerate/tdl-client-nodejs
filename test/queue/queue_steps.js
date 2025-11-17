@@ -204,8 +204,11 @@ const USER_IMPLEMENTATIONS = {
         return int_array;
     },
     "work for 600ms": function () {
-        sleep(600);
-        return "OK";
+        return new Promise(function (resolve) {
+            setTimeout(function () {
+                resolve("OK");
+            }, 600);
+        });
     },
     "concatenate fields as string": function (obj) {
         const item = new TestItem(obj);
