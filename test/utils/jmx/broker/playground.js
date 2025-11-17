@@ -1,13 +1,13 @@
-'use strict';
-
 //Useful for debugging
-var util = require('util');
+import util from 'node:util';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 function inspect(result) {
     return util.inspect(result, {showHidden: false, depth: null});
 }
 
-var JolokiaSession = require('./jolokia_session.js');
+import JolokiaSession from './jolokia_session.js';
 
 var inspectSession = function (callback) {
     return function (jolokiaSession) {
@@ -92,8 +92,13 @@ var purge = function (callback) {
     };
 };
 
+const isMainModule = () => {
+    const currentFilePath = fileURLToPath(import.meta.url);
+    const executedPath = process.argv[1] ? path.resolve(process.argv[1]) : '';
+    return executedPath === currentFilePath;
+};
 
-if (!module.parent) {
+if (isMainModule()) {
     JolokiaSession.connect('localhost', 28161,
         inspectSession(addQueue(sendTextMessage(readQueueSize(browseQueues(purge()))))));
 }

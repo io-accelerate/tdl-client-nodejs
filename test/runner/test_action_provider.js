@@ -1,18 +1,17 @@
-'use strict';
+class TestActionProvider {
+    constructor() {
+        this._value = null;
+    }
 
-function TestActionProvider() {
-    this._value = null;
+    get() {
+        return new Promise((resolve) => {
+            resolve(this._value);
+        });
+    }
+
+    set(value) {
+        this._value = value;
+    }
 }
 
-TestActionProvider.prototype.get = function () {
-    var self = this;
-    return new Promise(function (resolve) {
-        resolve(self._value);
-    });
-};
-
-TestActionProvider.prototype.set = function (value) {
-    this._value = value;
-};
-
-module.exports = new TestActionProvider();
+export default new TestActionProvider();

@@ -1,8 +1,6 @@
-'use strict';
+import http from 'node:http';
 
-var http = require('http');
-
-var WiremockProcess = function (hostname, port) {
+const WiremockProcess = function (hostname, port) {
     this._serverUrl = 'http://' + hostname + ':' + port;
 };
 
@@ -124,4 +122,4 @@ WiremockProcess.prototype._postJson = function (method, data) {
     });
 };
 
-module.exports = WiremockProcess;
+export default WiremockProcess;

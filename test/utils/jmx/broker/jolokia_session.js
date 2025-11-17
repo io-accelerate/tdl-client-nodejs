@@ -1,6 +1,4 @@
-'use strict';
-
-var http = require('http');
+import http from 'node:http';
 
 var onSuccessfulResponse = function (callback) {
     return function (res) {
@@ -81,4 +79,4 @@ JolokiaSession.prototype.request = function (jolokiaPayload, callback) {
     req.end();
 };
 
-module.exports = JolokiaSession;
+export default JolokiaSession;

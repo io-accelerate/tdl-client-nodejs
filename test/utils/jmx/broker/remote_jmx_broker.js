@@ -1,7 +1,5 @@
-'use strict';
-
-var JolokiaSession = require('./jolokia_session.js');
-var RemoteJmxQueue = require('./remote_jmx_queue.js');
+import JolokiaSession from './jolokia_session.js';
+import RemoteJmxQueue from './remote_jmx_queue.js';
 
 var RemoteJmxBroker = function (jolokiaSession, brokerName) {
     this.jolokiaSession = jolokiaSession;
@@ -38,4 +36,4 @@ RemoteJmxBroker.prototype.addQueueAndPurge = function (queueName) {
     });
 };
 
-module.exports = RemoteJmxBroker;
+export default RemoteJmxBroker;

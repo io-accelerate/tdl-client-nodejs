@@ -1,7 +1,4 @@
-'use strict';
-
-
-var RemoteJmxQueue = function (jolokiaSession, brokerName, queueName) {
+const RemoteJmxQueue = function (jolokiaSession, brokerName, queueName) {
     this.name = queueName;
     this.jolokiaSession = jolokiaSession;
     this.queueBean = 'org.apache.activemq:type=Broker,brokerName=' + brokerName + ',destinationType=Queue,destinationName=' + queueName;
@@ -84,5 +81,4 @@ RemoteJmxQueue.prototype.getMessageContents = function () {
     });
 };
 
-
-module.exports = RemoteJmxQueue;
+export default RemoteJmxQueue;

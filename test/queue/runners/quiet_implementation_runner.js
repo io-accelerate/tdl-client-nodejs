@@ -1,18 +1,11 @@
-'use strict';
+export default class QuietImplementationRunner {
+    run() {
+        return new Promise((resolve) => {
+            resolve();
+        });
+    }
 
-function QuietImplementationRunner() {
-
+    setAuditStream() {
+        // Intentionally left blank
+    }
 }
-
-QuietImplementationRunner.prototype.run = function () {
-    return new Promise(function (resolve) {
-        // Do nothing.
-        resolve();
-    });
-};
-
-QuietImplementationRunner.prototype.setAuditStream = function (auditStream) {
-
-};
-
-module.exports = QuietImplementationRunner;

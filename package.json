@@ -1,6 +1,7 @@
 {
   "name": "tdl-client-nodejs",
   "version": "0.30.1",
+  "type": "module",
   "description": "A NodeJs client that allows users to get up to speed with the TDL system.",
   "main": "tdl-client.js",
   "scripts": {

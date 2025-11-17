@@ -1,16 +1,14 @@
-"use strict";
+import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
+import { Given, When, Then } from '@cucumber/cucumber';
 
-const assert = require('assert'); // Use Node.js built-in assert
-const fs = require('fs');
-const path = require('path');
-const {Given, When, Then} = require('@cucumber/cucumber');
-
-const TDL = require('../..');
-const WiremockProcess = require('./wiremock_process');
-const TestActionProvider = require('./test_action_provider');
-const TestAuditStream = require('./test_audit_stream');
-const NoisyImplementationRunner = require('../queue/runners/noisy_implementation_runner');
-const QuietImplementationRunner = require('../queue/runners/quiet_implementation_runner');
+import * as TDL from '../../tdl-client.js';
+import WiremockProcess from './wiremock_process.js';
+import TestActionProvider from './test_action_provider.js';
+import TestAuditStream from './test_audit_stream.js';
+import NoisyImplementationRunner from '../queue/runners/noisy_implementation_runner.js';
+import QuietImplementationRunner from '../queue/runners/quiet_implementation_runner.js';
 
 const workingDirectory = './';
 

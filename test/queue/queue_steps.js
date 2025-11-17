@@ -1,13 +1,11 @@
-"use strict";
+import util from 'node:util';
+import Promise from 'promise';
+import intercept from 'intercept-stdout';
+import { Given, When, Then } from '@cucumber/cucumber';
+import assert from 'node:assert';
 
-const util = require("util");
-const Promise = require("promise");
-const intercept = require("intercept-stdout");
-const {Given, When, Then} = require("@cucumber/cucumber");
-const assert = require("assert");
-
-const TDL = require("../..");
-const testBroker = require("../test_broker");
+import * as TDL from '../../tdl-client.js';
+import testBroker from '../test_broker.js';
 
 const HOSTNAME = "localhost";
 const PORT = 21613;

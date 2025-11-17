@@ -1,19 +1,16 @@
-'use strict';
+export default class NoisyImplementationRunner {
+    constructor(deployMessage) {
+        this._deployMessage = deployMessage;
+    }
 
-function NoisyImplementationRunner(deployMessage) {
-    this._deployMessage = deployMessage;
+    run() {
+        return new Promise((resolve) => {
+            this._auditStream.log(this._deployMessage);
+            resolve();
+        });
+    }
+
+    setAuditStream(auditStream) {
+        this._auditStream = auditStream;
+    }
 }
-
-NoisyImplementationRunner.prototype.run = function () {
-    var self = this;
-    return new Promise(function (resolve) {
-        self._auditStream.log(self._deployMessage);
-        resolve();
-    });
-};
-
-NoisyImplementationRunner.prototype.setAuditStream = function (auditStream) {
-    this._auditStream = auditStream;
-};
-
-module.exports = NoisyImplementationRunner;
